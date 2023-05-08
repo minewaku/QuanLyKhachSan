@@ -12,9 +12,11 @@ import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
 
 import BUS.StaffBUS;
+import DTO.CustomerDTO;
 import DTO.StaffDTO;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout;
+import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class StaffGUI extends javax.swing.JFrame {
@@ -47,16 +49,18 @@ public class StaffGUI extends javax.swing.JFrame {
     private javax.swing.JTextField tfPhone;
     private javax.swing.JTextField tfSalary;
     private javax.swing.JTextField tfStaffID;
+    private javax.swing.JButton searchBtn;
+    private javax.swing.JTextField tfSearch;
+
     // End of variables declaration//GEN-END:variables
     
     public StaffGUI() {
         initComponents();
         loadStaffList();
         
-//		setLocationRelativeTo(null);
-//		setExtendedState(JFrame.MAXIMIZED_BOTH);
-//		setUndecorated(true);
-//		setVisible(true);
+        setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setVisible(true);
     }
     
     @SuppressWarnings("unchecked")
@@ -88,6 +92,8 @@ public class StaffGUI extends javax.swing.JFrame {
         lblTitle = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        searchBtn = new javax.swing.JButton();
+        tfSearch = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Quản lý khách sạn");
@@ -349,6 +355,25 @@ public class StaffGUI extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(table);
+        
+        searchBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        searchBtn.setText("Search");
+        searchBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+                            try {
+                                if (tfSearch.getText().trim().equals("")) {
+                                    lblError.setText("Vui lòng nhập đầy đủ thông tin ");
+                                }
+                                
+                                else {
+                                    searchStaffByID();
+                                }
+                                
+                            } catch (NumberFormatException ex) {
+                                lblError.setText("Xảy ra lỗi");
+                            }
+			}
+		});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -365,7 +390,13 @@ public class StaffGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1)
-                        .addContainerGap())))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(163, 163, 163)
+                        .addComponent(searchBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -378,7 +409,11 @@ public class StaffGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(searchBtn)
+                            .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
 
@@ -436,6 +471,34 @@ public class StaffGUI extends javax.swing.JFrame {
                 new StaffGUI().setVisible(true);
             }
         });
+    }
+    
+    
+    public void searchStaffByID() {
+        DefaultTableModel model = new DefaultTableModel();
+        ArrayList<StaffDTO> arr = new ArrayList<StaffDTO>();
+        arr = staffBUS.getAllStaffs();
+        // Gọi phương thức searchCustomer từ CustomerBUS để tìm kiếm khách hàng
+        StaffDTO em = new StaffDTO();
+        int id = Integer.parseInt(tfSearch.getText().trim());
+        em.setId(id);
+        String message = staffBUS.searchStaff(em);
+
+        // Nếu tìm thấy khách hàng, cập nhật model và bôi đen hàng tương ứng
+        if (message.equals("thành công")) {
+            for (int i = 0; i < arr.size(); i++) {
+                StaffDTO dto = arr.get(i);
+                if (dto.getId() == id) {
+                    Object[] rowData = {dto.getId(), dto.getFullname(), dto.getPhone(), dto.getGender(), dto.getBirthday(), dto.getSalary(), dto.getPassword()};
+                    model.addRow(rowData);
+                    table.setRowSelectionInterval(i, i);
+                    break;
+                }
+            }
+        
+        } else {
+            JOptionPane.showMessageDialog(null, message);
+        }
     }
     
 	public void loadStaffList(){

@@ -21,7 +21,7 @@ public class CustomerBUS {
 		if (cus.checkValidPhone(Customer.getPhone()))
 			return "Số điện thoại không hợp lệ";
 		
-		if (cus.checkIfDateIsValid(Customer.getBirthday()))
+		if (!cus.checkIfDateIsValid(Customer.getBirthday()))
 			return "Ngày không hợp lệ (MM/dd/yyyy)";
 		
 		if (cus.addCustomer(Customer))
@@ -40,7 +40,7 @@ public class CustomerBUS {
 		if (cus.checkValidPhone(Customer.getPhone()))
 			return "Số điện thoại không hợp lệ";
 		
-		if (cus.checkIfDateIsValid(Customer.getBirthday()))
+		if (!cus.checkIfDateIsValid(Customer.getBirthday()))
 			return "Ngày không hợp lệ (MM/dd/yyyy)";
 		
 		if (cus.editCustomer(Customer))
@@ -58,6 +58,18 @@ public class CustomerBUS {
 		
 		return "Xóa thất bại";
 	}
+        
+    public String searchCustomer(CustomerDTO Customer) {
+        if (!cus.hasCustomerID(Customer.getId()))
+		return "Mã Khách Hàng không tồn tại";
+	
+	if (cus.searchCustomer(Customer)) {
+		return "true";
+    }
+                
+	
+	return "Không tìm thấy Mã Khách Hàng";
+    }
 	
 }
 

@@ -2,459 +2,500 @@ package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Container;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import javax.swing.JButton;
+import javax.swing.GroupLayout;
 import javax.swing.JFrame;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
-import DTO.CustomerDTO;
+import BUS.OrdersBUS;
+import BUS.ReservationBUS;
+import BUS.ServiceBUS;
 import DTO.OrdersDTO;
 import DTO.PaymentDTO;
+import DTO.ReservationsDTO;
+import DTO.ServiceDTO;
 
-public class OrdersGUI extends JFrame{
 
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-	private JPanel contentPane;
-	private JTable table;
-    private JTextField tfSearch_1;
-    private JTextField textField;
-    private JTextField textField_1;
-    private JTextField textField_2;
+public class OrdersGUI extends javax.swing.JFrame {
+	
+	OrdersBUS orderBUS = new OrdersBUS();
+	ReservationBUS reservationBUS = new ReservationBUS();
+	ServiceBUS serviceBUS = new ServiceBUS();
+	LoginGUI user = new LoginGUI();
+	
+    private javax.swing.JButton deleteBtn;
+    private javax.swing.JButton editBtn;
+    private javax.swing.JButton addBtn;
+    private javax.swing.JButton exitBtn;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable orderTable;
+    private javax.swing.JTextField tfReservationId;
+    private javax.swing.JTextField tfServiceId;
+    private javax.swing.JTextField tfStaffId;
+    private javax.swing.JTextField tfQuantity;
+    private JTable reservationTable;
+    private JPanel panel_2;
+    private JScrollPane jScrollPane1_2;
+    private JLabel lblReservation_1;
+    private JTable serviceTable;
 
-	public static void main(String[] args) {
-		OrdersGUI frame = new OrdersGUI();
-		JFrame.setDefaultLookAndFeelDecorated(true);
-		frame.setLocationRelativeTo(null);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		frame.setUndecorated(true);
-		frame.setVisible(true);frame.setVisible(true);
-	}
-
+  
+	private Container titlePane;
+	private Container mainPane;
+	private JLabel lblError;
 	public OrdersGUI() {
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(300, 120, 1024, 576);
-		contentPane = new JPanel();
-		contentPane.setBorder(new EmptyBorder(10, 10, 10, 10));
+        initComponents();
+        loadOrderList();
+        loadReservationList();
+        loadServiceList();
+    }
+    
+    @SuppressWarnings("unchecked")
+    private void initComponents() {
 
-		setContentPane(contentPane);
-		GridBagLayout gbl_contentPane = new GridBagLayout();
-		gbl_contentPane.columnWeights = new double[]{1.0, 0.0};
-		gbl_contentPane.rowWeights = new double[]{1.0};
-		contentPane.setLayout(gbl_contentPane);
-		
-		JPanel mainPane = new JPanel();
-		GridBagConstraints gbc_mainPane = new GridBagConstraints();
-		gbc_mainPane.fill = GridBagConstraints.BOTH;
-		gbc_mainPane.gridx = 0;
-		gbc_mainPane.gridy = 0;
-		contentPane.add(mainPane, gbc_mainPane);
-		mainPane.setLayout(new BorderLayout(0, 0));
-		
-		JPanel titlePane = new JPanel();
-		GridBagLayout gbl_titlePane = new GridBagLayout();
-		gbl_titlePane.rowHeights = new int[] {80, 32};
-		gbl_titlePane.columnWeights = new double[]{0.0};
-		gbl_titlePane.rowWeights = new double[]{0.0, 0.0};
-		titlePane.setLayout(gbl_titlePane);
-		
-		JLabel lblTitle = new JLabel("Order");
-		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 32));
-		
-		GridBagConstraints gbc_lblTitle = new GridBagConstraints();
-		gbc_lblTitle.weightx = 1.0;
-		gbc_lblTitle.gridx = 0;
-		gbc_lblTitle.gridy = 0;
-		titlePane.add(lblTitle, gbc_lblTitle);
-		
-		JLabel lblError = new JLabel("*Error");
-		lblError.setForeground(new Color(255, 0, 128));
-		lblError.setHorizontalAlignment(SwingConstants.CENTER);
-		lblError.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		GridBagConstraints gbc_lblError = new GridBagConstraints();
-		gbc_lblError.insets = new Insets(0, 40, 60, 0);
-		gbc_lblError.weightx = 1.0;
-		gbc_lblError.anchor = GridBagConstraints.WEST;
-		gbc_lblError.gridx = 0;
-		gbc_lblError.gridy = 1;
-		titlePane.add(lblError, gbc_lblError);
-		mainPane.add(titlePane, BorderLayout.NORTH);
-		
-		JPanel functionPane = new JPanel();
-		mainPane.add(functionPane);
-		functionPane.setLayout(new BorderLayout(0, 0));
-		
-		JPanel inputPane = new JPanel();
-		functionPane.add(inputPane, BorderLayout.NORTH);
-		GridBagLayout gbl_inputPane = new GridBagLayout();
-		gbl_inputPane.columnWidths = new int[] {120, 420};
-		gbl_inputPane.rowHeights = new int[] {40, 40, 40, 40, 40};
-		gbl_inputPane.columnWeights = new double[]{0.0, 1.0};
-		gbl_inputPane.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0};
-		inputPane.setLayout(gbl_inputPane);
-		
-		JLabel lblReservationID = new JLabel("ReservationID:");
-		lblReservationID.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		GridBagConstraints gbc_lblReservationID = new GridBagConstraints();
-		gbc_lblReservationID.anchor = GridBagConstraints.EAST;
-		gbc_lblReservationID.insets = new Insets(0, 0, 40, 10);
-		gbc_lblReservationID.gridx = 0;
-		gbc_lblReservationID.gridy = 1;
-		inputPane.add(lblReservationID, gbc_lblReservationID);
-		
-		JTextField tfReservationID = new JTextField(30);
-		tfReservationID.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		GridBagConstraints gbc_tfReservationID = new GridBagConstraints();
-		gbc_tfReservationID.insets = new Insets(0, 0, 40, 0);
-		gbc_tfReservationID.gridx = 1;
-		gbc_tfReservationID.gridy = 1;
-		inputPane.add(tfReservationID, gbc_tfReservationID);
-		
-		JLabel lbServiceID = new JLabel("ServiceID:");
-		lbServiceID.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		GridBagConstraints gbc_lbServiceID = new GridBagConstraints();
-		gbc_lbServiceID.anchor = GridBagConstraints.EAST;
-		gbc_lbServiceID.insets = new Insets(0, 0, 40, 10);
-		gbc_lbServiceID.gridx = 0;
-		gbc_lbServiceID.gridy = 2;
-		inputPane.add(lbServiceID, gbc_lbServiceID);
-		
-		JTextField tfServiceID = new JTextField(30);
-		tfServiceID.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		GridBagConstraints gbc_tfServiceID = new GridBagConstraints();
-		gbc_tfServiceID.insets = new Insets(0, 0, 40, 0);
-		gbc_tfServiceID.gridx = 1;
-		gbc_tfServiceID.gridy = 2;
-		inputPane.add(tfServiceID, gbc_tfServiceID);
-		
-		JLabel lblStaffID = new JLabel("StaffID:");
-		lblStaffID.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		GridBagConstraints gbc_lblStaffID = new GridBagConstraints();
-		gbc_lblStaffID.anchor = GridBagConstraints.EAST;
-		gbc_lblStaffID.insets = new Insets(0, 0, 40, 10);
-		gbc_lblStaffID.gridx = 0;
-		gbc_lblStaffID.gridy = 3;
-		inputPane.add(lblStaffID, gbc_lblStaffID);
-		
-		JTextField tfStaffID = new JTextField(30);
-		tfStaffID.setEditable(false);
-		tfStaffID.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		GridBagConstraints gbc_tfStaffID = new GridBagConstraints();
-		gbc_tfStaffID.insets = new Insets(0, 0, 40, 0);
-		gbc_tfStaffID.gridx = 1;
-		gbc_tfStaffID.gridy = 3;
-		inputPane.add(tfStaffID, gbc_tfStaffID);
-		
-		JLabel lblQuantity = new JLabel("Quantity:");
-		lblQuantity.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		GridBagConstraints gbc_lblQuantity = new GridBagConstraints();
-		gbc_lblQuantity.anchor = GridBagConstraints.EAST;
-		gbc_lblQuantity.insets = new Insets(0, 0, 40, 10);
-		gbc_lblQuantity.gridx = 0;
-		gbc_lblQuantity.gridy = 4;
-		inputPane.add(lblQuantity, gbc_lblQuantity);
-		
-		JTextField tfQuantity = new JTextField(30);
-		tfQuantity.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		GridBagConstraints gbc_tfQuantity = new GridBagConstraints();
-		gbc_tfQuantity.insets = new Insets(0, 0, 40, 0);
-		gbc_tfQuantity.gridx = 1;
-		gbc_tfQuantity.gridy = 4;
-		inputPane.add(tfQuantity, gbc_tfQuantity);
-		
-		JPanel buttonPane = new JPanel();
-		functionPane.add(buttonPane, BorderLayout.CENTER);
-		GridBagLayout gbl_buttonPane = new GridBagLayout();
-		gbl_buttonPane.columnWidths = new int[] {200, 260, 200};
-		gbl_buttonPane.rowHeights = new int[] {70, 70};
-		gbl_buttonPane.columnWeights = new double[]{0.0, 0.0, 0.0};
-		gbl_buttonPane.rowWeights = new double[]{0.0, 0.0};
-		buttonPane.setLayout(gbl_buttonPane);
-		
-		JButton addbtn = new JButton("Add");
-		addbtn.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		addbtn.addActionListener(new ActionListener() {
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        tfReservationId = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        tfServiceId = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        tfStaffId = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        tfQuantity = new javax.swing.JTextField();
+        editBtn = new javax.swing.JButton();
+        addBtn = new javax.swing.JButton();
+        deleteBtn = new javax.swing.JButton();
+        exitBtn = new javax.swing.JButton();
+        jLabel9 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Quản lý nhân viên");
+        setBackground(new java.awt.Color(204, 255, 204));
+
+        jPanel1.setBackground(new java.awt.Color(192, 192, 192));
+        jPanel1.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+
+        jPanel2.setBackground(new java.awt.Color(192, 192, 192));
+        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setText("ReservationID");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14));
+        jLabel3.setText("ServiceID");
+
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setText("StaffID");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setText("Quantity");
+
+        editBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        editBtn.setText("edit");
+        editBtn.setMaximumSize(new java.awt.Dimension(78, 31));
+        editBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (tfReservationID.getText().trim().equals("") || tfServiceID.getText().trim().equals("") || tfQuantity.getText().trim().equals(""))
+					if (tfPaymentId.getText().trim().equals("") || tfCustomerId.getText().trim().equals(""))
 						lblError.setText("Vui lòng nhập đủ thông tin");
 					
 					else {
-						OrdersDTO em = new OrdersDTO();
-						em.setReservationId(Integer.parseInt(tfReservationID.getText()));
-						em.setServiceId(Integer.parseInt(tfServiceID.getText()));
+						PaymentDTO em = new PaymentDTO();
+						em.setPaymentId(Integer.parseInt(tfPaymentId.getText()));
+						em.setCustomerId(Integer.parseInt(tfCustomerId.getText()));
 						
-						lblError.setText(ordersBUS.addOrders(em, em.getServiceId()));
-						loadOrdersList();
+						lblError.setText(paymentBUS.editPayment(em, em.getCustomerId()));
+						loadPaymentList();
+						loadCustomerList();
 					}	
 				} catch (NumberFormatException ex) {
 					lblError.setText("Thông tin không hợp lệ");
 				}
 			}
 		});
-		GridBagConstraints gbc_addbtn = new GridBagConstraints();
-		gbc_addbtn.fill = GridBagConstraints.BOTH;
-		gbc_addbtn.insets = new Insets(0, 0, 20, 60);
-		gbc_addbtn.gridx = 0;
-		gbc_addbtn.gridy = 0;
-		buttonPane.add(addbtn, gbc_addbtn);
-		
-		JButton eidtPane = new JButton("Edit");
-		eidtPane.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		eidtPane.addActionListener(new ActionListener() {
+
+        addBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        addBtn.setText("add");
+        addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					if (tfPaymentId.getText().trim().equals("") || tfCustomerId.getText().trim().equals(""))
+						lblError.setText("Vui lòng nhập đủ thông tin");
+					
+					else {
+						PaymentDTO em = new PaymentDTO();
+						em.setPaymentId(Integer.parseInt(tfPaymentId.getText()));
+						em.setCustomerId(Integer.parseInt(tfCustomerId.getText()));
+						
+						lblError.setText(paymentBUS.addPayment(em, em.getCustomerId()));
+						loadPaymentList();
+						loadCustomerList();
+					}	
+				} catch (NumberFormatException ex) {
+					lblError.setText("Thông tin không hợp lệ");
+				}
 			}
 		});
-		GridBagConstraints gbc_eidtPane = new GridBagConstraints();
-		gbc_eidtPane.fill = GridBagConstraints.BOTH;
-		gbc_eidtPane.insets = new Insets(0, 60, 20, 60);
-		gbc_eidtPane.gridx = 1;
-		gbc_eidtPane.gridy = 0;
-		buttonPane.add(eidtPane, gbc_eidtPane);
-		
-		JButton deleteBtn = new JButton("Delete");
-		deleteBtn.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		GridBagConstraints gbc_deleteBtn = new GridBagConstraints();
-		gbc_deleteBtn.fill = GridBagConstraints.BOTH;
-		gbc_deleteBtn.insets = new Insets(0, 60, 20, 0);
-		gbc_deleteBtn.gridx = 2;
-		gbc_deleteBtn.gridy = 0;
-		buttonPane.add(deleteBtn, gbc_deleteBtn);
-		
-		JButton exitBtn = new JButton("Exit");
-		exitBtn.addActionListener(new ActionListener() {
+        
+        deleteBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        deleteBtn.setText("delete");
+        deleteBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				try {
+					if (tfPaymentId.getText().trim().equals(""))
+						lblError.setText("Vui lòng nhập đủ thông tin");
+					
+					else {
+						PaymentDTO em = new PaymentDTO();
+						em.setPaymentId(Integer.parseInt(tfPaymentId.getText().trim()));
+						
+						lblError.setText(paymentBUS.deletePayment(em));
+						loadPaymentList();
+					}	
+				} catch (NumberFormatException ex) {
+					lblError.setText("Xảy ra lỗi");
+				}
 			}
 		});
-		exitBtn.setFont(new Font("Tahoma", Font.PLAIN, 18));
-		GridBagConstraints gbc_exitBtn = new GridBagConstraints();
-		gbc_exitBtn.fill = GridBagConstraints.BOTH;
-		gbc_exitBtn.gridwidth = 3;
-		gbc_exitBtn.insets = new Insets(20, 0, 0, 0);
-		gbc_exitBtn.gridx = 0;
-		gbc_exitBtn.gridy = 1;
-		buttonPane.add(exitBtn, gbc_exitBtn);
-		
-//		TABLEPANE
-		
-		JPanel tablePane = new JPanel();
-		tablePane.setPreferredSize(new Dimension(((int) screenSize.getWidth() - 10 ) / 2, (int) tablePane.getPreferredSize().getHeight()));
-		GridBagConstraints gbc_tablePane = new GridBagConstraints();
-		gbc_tablePane.fill = GridBagConstraints.BOTH;
-		gbc_tablePane.gridx = 1;
-		gbc_tablePane.gridy = 0;
-		contentPane.add(tablePane, gbc_tablePane);
-		GridBagLayout gbl_tablePane = new GridBagLayout();
-		gbl_tablePane.columnWidths = new int[] {0};
-		gbl_tablePane.rowHeights = new int[] {300, 60, 300, 60};
-		gbl_tablePane.columnWeights = new double[]{0.0};
-		gbl_tablePane.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0};
-		tablePane.setLayout(gbl_tablePane);
-		
-//		TABLE_1
-		
-		JTable table_1 = new JTable();
-		table_1.setPreferredSize(new Dimension(((int) screenSize.getWidth() - 10 ) / 2, 300));
-		table_1.setFillsViewportHeight(true);
-		table_1.setFont(new Font("Tahoma", Font.BOLD, 24));
-		table_1.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"ReservationID", "ServiceID", "StaffID", "Quantity", "Date", "Amount"
+
+        exitBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        exitBtn.setText("exit");
+        exitBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				JFrame.setDefaultLookAndFeelDecorated(false);
+				
+		        MenuGUI frame = new MenuGUI();
+				frame.setLocationRelativeTo(null);
+				frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+				frame.setUndecorated(true);
+				frame.setVisible(true);
 			}
-		));
-		
-//		SCROLLPANE_1
-		
-		JScrollPane scrollPane_1 = new JScrollPane(table_1);
-		scrollPane_1.setPreferredSize(new Dimension(((int) screenSize.getWidth() - 10 ) / 2, 300));
-		GridBagConstraints gbc_scrollPane_1 = new GridBagConstraints();
-		gbc_scrollPane_1.anchor = GridBagConstraints.NORTH;
-		gbc_scrollPane_1.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane_1.gridx = 0;
-		gbc_scrollPane_1.gridy = 0;
-		tablePane.add(scrollPane_1, gbc_scrollPane_1);
-		
-//		SEARCHPANE_1
-		
-		JPanel searchPane_1 = new JPanel();
-		GridBagConstraints gbc_searchPane_1 = new GridBagConstraints();
-		gbc_searchPane_1.insets = new Insets(10, 0, 10, 0);
-		gbc_searchPane_1.fill = GridBagConstraints.BOTH;
-		gbc_searchPane_1.anchor = GridBagConstraints.NORTH;
-		gbc_searchPane_1.gridx = 0;
-		gbc_searchPane_1.gridy = 1;
-		tablePane.add(searchPane_1, gbc_searchPane_1);
-		GridBagLayout gbl_searchPane_1 = new GridBagLayout();
-		gbl_searchPane_1.columnWidths = new int[] {360};
-		gbl_searchPane_1.rowHeights = new int[] {30, 30};
-		gbl_searchPane_1.columnWeights = new double[]{1.0};
-		gbl_searchPane_1.rowWeights = new double[]{0.0, 0.0};
-		searchPane_1.setLayout(gbl_searchPane_1);
-		
-//		TFSEARCH_1
-		
-		tfSearch_1 = new JTextField();
-		tfSearch_1.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		GridBagConstraints gbc_tfSearch_1 = new GridBagConstraints();
-		gbc_tfSearch_1.insets = new Insets(0, 0, 10, 0);
-		gbc_tfSearch_1.fill = GridBagConstraints.VERTICAL;
-		gbc_tfSearch_1.gridx = 0;
-		gbc_tfSearch_1.gridy = 0;
-		searchPane_1.add(tfSearch_1, gbc_tfSearch_1);
-		tfSearch_1.setColumns(10);
-		
-//		BTNSEARCCH_1		
-		
-		JButton btnSearch_1 = new JButton("Search");
-		GridBagConstraints gbc_btnSearch_1 = new GridBagConstraints();
-		gbc_btnSearch_1.gridx = 0;
-		gbc_btnSearch_1.gridy = 1;
-		searchPane_1.add(btnSearch_1, gbc_btnSearch_1);
-		
-//		TABLE_2
-		
-		JTable table_2 = new JTable();
-		table_2.setCellSelectionEnabled(true);
-		table_2.setColumnSelectionAllowed(true);
-		table_2.setPreferredSize(new Dimension(((int) screenSize.getWidth() - 10 ) / 2, 300));
-		table_2.setFillsViewportHeight(true);
-		table_2.setFont(new Font("Tahoma", Font.BOLD, 24));
-		table_2.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
-				"ServiceID", "Name", "Price"
-			}
-		));
-		
-//		SCROLLPANE_2		
-	
-		JScrollPane scrollPane_2 = new JScrollPane(table_2);
-		scrollPane_2.setPreferredSize(new Dimension(((int) screenSize.getWidth() - 10 ) / 2, 300));
-		GridBagConstraints gbc_scrollPane_2 = new GridBagConstraints();
-		gbc_scrollPane_2.anchor = GridBagConstraints.NORTH;
-		gbc_scrollPane_2.fill = GridBagConstraints.BOTH;
-		gbc_scrollPane_2.gridx = 0;
-		gbc_scrollPane_2.gridy = 2;
-		tablePane.add(scrollPane_2, gbc_scrollPane_2);
-	
-//		SEARCHPANE_2		
-		
-		JPanel searchPane_2 = new JPanel();
-		GridBagConstraints gbc_searchPane_2 = new GridBagConstraints();
-		gbc_searchPane_2.insets = new Insets(10, 0, 0, 0);
-		gbc_searchPane_2.anchor = GridBagConstraints.NORTH;
-		gbc_searchPane_2.fill = GridBagConstraints.BOTH;
-		gbc_searchPane_2.gridx = 0;
-		gbc_searchPane_2.gridy = 3;
-		tablePane.add(searchPane_2, gbc_searchPane_2);
-		GridBagLayout gbl_searchPane_2 = new GridBagLayout();
-		gbl_searchPane_2.columnWidths = new int[] {360};
-		gbl_searchPane_2.rowHeights = new int[] {30, 30};
-		gbl_searchPane_2.columnWeights = new double[]{1.0};
-		gbl_searchPane_2.rowWeights = new double[]{0.0, 0.0};
-		searchPane_2.setLayout(gbl_searchPane_2);
-		
-//		TFSEARCH_2		
-	
-		JTextField tfSearch_2 = new JTextField();
-		tfSearch_2.setFont(new Font("Tahoma", Font.PLAIN, 22));
-		tfSearch_2.setColumns(10);
-		GridBagConstraints gbc_tfSearch_2 = new GridBagConstraints();
-		gbc_tfSearch_2.fill = GridBagConstraints.VERTICAL;
-		gbc_tfSearch_2.insets = new Insets(0, 0, 10, 0);
-		gbc_tfSearch_2.gridx = 0;
-		gbc_tfSearch_2.gridy = 0;
-		searchPane_2.add(tfSearch_2, gbc_tfSearch_2);
-		
-//		BTNSEARCH_2	
-		
-		JButton btnSearch_2 = new JButton("Search");
-		GridBagConstraints gbc_btnSearch_2 = new GridBagConstraints();
-		gbc_btnSearch_2.gridx = 0;
-		gbc_btnSearch_2.gridy = 1;
-		searchPane_2.add(btnSearch_2, gbc_btnSearch_2);
-		
-		
-	}
-	
-	private void loadPaymentList() {
-		DefaultTableModel dtm = new DefaultTableModel();
-		dtm.addColumn("paymentId");
-		dtm.addColumn("cutomerId");
+		});
+        
+        lblError = new JLabel("");
+        lblError.setForeground(new Color(255, 0, 128));
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2Layout.setHorizontalGroup(
+        	jPanel2Layout.createParallelGroup(Alignment.TRAILING)
+        		.addGroup(jPanel2Layout.createSequentialGroup()
+        			.addGap(18)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        				.addGroup(jPanel2Layout.createSequentialGroup()
+        					.addComponent(jLabel5, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
+        					.addPreferredGap(ComponentPlacement.RELATED)
+        					.addComponent(tfQuantity, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
+        				.addComponent(addBtn, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+        				.addComponent(editBtn, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+        				.addComponent(deleteBtn, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+        				.addComponent(exitBtn, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
+        				.addGroup(jPanel2Layout.createSequentialGroup()
+        					.addComponent(jLabel2)
+        					.addGap(7)
+        					.addComponent(tfReservationId, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
+        				.addGroup(jPanel2Layout.createSequentialGroup()
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING, false)
+        						.addComponent(jLabel4, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        						.addComponent(jLabel3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        					.addGap(39)
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING)
+        						.addComponent(tfStaffId, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
+        						.addComponent(tfServiceId, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)))
+        				.addComponent(lblError, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE))
+        			.addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+        	jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(jPanel2Layout.createSequentialGroup()
+        			.addGap(36)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(jLabel2)
+        				.addComponent(tfReservationId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addGap(18)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(jLabel3)
+        				.addComponent(tfServiceId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addGap(18)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(jLabel4)
+        				.addComponent(tfStaffId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addGap(18)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(jLabel5)
+        				.addComponent(tfQuantity, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addComponent(lblError, GroupLayout.PREFERRED_SIZE, 26, GroupLayout.PREFERRED_SIZE)
+        			.addGap(297)
+        			.addComponent(addBtn)
+        			.addGap(18)
+        			.addComponent(editBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        			.addGap(18)
+        			.addComponent(deleteBtn)
+        			.addGap(18)
+        			.addComponent(exitBtn)
+        			.addContainerGap(128, Short.MAX_VALUE))
+        );
+        jPanel2.setLayout(jPanel2Layout);
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1Layout.setHorizontalGroup(
+        	jPanel1Layout.createParallelGroup(Alignment.TRAILING)
+        		.addGroup(jPanel1Layout.createSequentialGroup()
+        			.addContainerGap()
+        			.addComponent(jPanel2, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        			.addContainerGap())
+        );
+        jPanel1Layout.setVerticalGroup(
+        	jPanel1Layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(jPanel1Layout.createSequentialGroup()
+        			.addGap(26)
+        			.addComponent(jPanel2, GroupLayout.PREFERRED_SIZE, 714, Short.MAX_VALUE)
+        			.addContainerGap())
+        );
+        jPanel1.setLayout(jPanel1Layout);
+
+        jLabel9.setBackground(new java.awt.Color(192, 192, 192));
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("ORDERS");
+        jLabel9.setOpaque(true);
+        
+        JPanel panel = new JPanel();
+        panel.setBackground(Color.LIGHT_GRAY);
+        
+        JPanel panel_1 = new JPanel();
+        panel_1.setLayout(null);
+        panel_1.setBackground(Color.LIGHT_GRAY);
+        
+        JScrollPane jScrollPane1_1 = new JScrollPane();
+        jScrollPane1_1.setBounds(0, 29, 1148, 155);
+        panel_1.add(jScrollPane1_1);
+        
+        reservationTable = new JTable();
+        reservationTable.setBackground(Color.LIGHT_GRAY);
+        jScrollPane1_1.setViewportView(reservationTable);
+        
+        JLabel lblReservation = new JLabel("RESERVATION");
+        lblReservation.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        lblReservation.setBounds(552, 6, 123, 13);
+        panel_1.add(lblReservation);
+        
+        panel_2 = new JPanel();
+        panel_2.setLayout(null);
+        panel_2.setBackground(Color.LIGHT_GRAY);
+        
+        jScrollPane1_2 = new JScrollPane();
+        jScrollPane1_2.setBounds(0, 29, 1148, 155);
+        panel_2.add(jScrollPane1_2);
+        
+        serviceTable = new JTable();
+        serviceTable.setBackground(Color.LIGHT_GRAY);
+        jScrollPane1_2.setViewportView(serviceTable);
+        
+        lblReservation_1 = new JLabel("SERVICES");
+        lblReservation_1.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        lblReservation_1.setBounds(552, 6, 123, 13);
+        panel_2.add(lblReservation_1);
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        layout.setHorizontalGroup(
+        	layout.createParallelGroup(Alignment.TRAILING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addGap(21)
+        			.addComponent(jPanel1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        			.addPreferredGap(ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+        			.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+        				.addGroup(layout.createSequentialGroup()
+        					.addComponent(jLabel9, GroupLayout.PREFERRED_SIZE, 282, GroupLayout.PREFERRED_SIZE)
+        					.addGap(416))
+        				.addGroup(layout.createSequentialGroup()
+        					.addGroup(layout.createParallelGroup(Alignment.TRAILING)
+        						.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 1148, GroupLayout.PREFERRED_SIZE)
+        						.addComponent(panel, GroupLayout.PREFERRED_SIZE, 1148, GroupLayout.PREFERRED_SIZE)
+        						.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 1148, GroupLayout.PREFERRED_SIZE))
+        					.addGap(25))))
+        );
+        layout.setVerticalGroup(
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addGap(17)
+        			.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        				.addComponent(jPanel1, GroupLayout.DEFAULT_SIZE, 750, Short.MAX_VALUE)
+        				.addGroup(layout.createSequentialGroup()
+        					.addComponent(jLabel9, GroupLayout.PREFERRED_SIZE, 56, GroupLayout.PREFERRED_SIZE)
+        					.addGap(58)
+        					.addComponent(panel, GroupLayout.PREFERRED_SIZE, 184, GroupLayout.PREFERRED_SIZE)
+        					.addGap(31)
+        					.addComponent(panel_1, GroupLayout.PREFERRED_SIZE, 184, GroupLayout.PREFERRED_SIZE)
+        					.addGap(18)
+        					.addComponent(panel_2, GroupLayout.PREFERRED_SIZE, 184, GroupLayout.PREFERRED_SIZE)
+        					.addGap(35))))
+        );
+        panel.setLayout(null);
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jScrollPane1.setBounds(0, 29, 1148, 155);
+        panel.add(jScrollPane1);
+        orderTable = new javax.swing.JTable();
+        
+        orderTable.setBackground(new java.awt.Color(192, 192, 192));
+        orderTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        orderTable.setModel(new javax.swing.table.DefaultTableModel(
+            
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(orderTable);
+        
+        JLabel lblNewLabel = new JLabel("ORDER");
+        lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        lblNewLabel.setBounds(552, 6, 45, 13);
+        panel.add(lblNewLabel);
+        getContentPane().setLayout(layout);
+    }
+
+
+
+    
+    public static void main(String args[]) {
+        
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(OrdersGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(OrdersGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(OrdersGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(OrdersGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new OrdersGUI().setVisible(true);
+            }
+        });
+    }
+    
+    private void loadStaffId() {
+    	tfStaffId.setText(Integer.toString(user.loginUser.getId()));
+    }
+    
+    public void loadOrderList() {
+    	DefaultTableModel dtm = new DefaultTableModel();
+		dtm.addColumn("reservationId");
+		dtm.addColumn("serviceId");
 		dtm.addColumn("staffId");
-		dtm.addColumn("create date");
-		dtm.addColumn("payment date");
-		dtm.addColumn("total");
-		dtm.addColumn("status");
-		table_1.setModel(dtm);
+		dtm.addColumn("quantity");
+		dtm.addColumn("date");
+		dtm.addColumn("amount");
 		
-		ArrayList<PaymentDTO> arr = new ArrayList<PaymentDTO>();
-		arr = paymentBUS.getAllPayments();
+		reservationTable.setModel(dtm);
+		
+		ArrayList<OrdersDTO> arr = new ArrayList<OrdersDTO>();
+		arr = orderBUS.getAllOrders();
 		
 		for(int i = 0; i < arr.size(); i++){
-			PaymentDTO em = arr.get(i);
+			OrdersDTO em = arr.get(i);
 			
-			
-			int paymentId = em.getPaymentId();
-			int customerId = em.getCustomerId();
+			int reservationId = em.getReservationId();
+			int serviceId = em.getServiceId();
 			int staffId = em.getStaffId();
-			String createDate = em.getCreateDate();
-			String paymentDate = em.getPaymentDate();
-			int total = em.getTotal();
-			String status = (em.getStatus() ? "paid" : "unpaid");
+			int quantity = em.getQuantity();
+			String date = em.getDate();
+			int amount = em.getAmount();
 			
-			Object[] row = {paymentId, customerId, staffId, createDate, paymentDate, total, status};
+			Object[] row = {reservationId, serviceId, staffId, quantity, date, amount};
+			
+			dtm.addRow(row);
+		}
+    }
+    
+    public void loadReservationList(){
+		DefaultTableModel dtm = new DefaultTableModel();
+		dtm.addColumn("reservationId");
+		dtm.addColumn("paymentId");
+		dtm.addColumn("roomId");
+		dtm.addColumn("arrival date");
+		dtm.addColumn("rent date");
+		dtm.addColumn("amount");
+		
+		reservationTable.setModel(dtm);
+		
+		ArrayList<ReservationsDTO> arr = new ArrayList<ReservationsDTO>();
+		arr = reservationBUS.getAllReservationss();
+		
+		for(int i = 0; i < arr.size(); i++){
+			ReservationsDTO em = arr.get(i);
+			
+			int reservationId = em.getReservationId();
+			int paymentId = em.getPaymentId();
+			int roomId = em.getRoomId();
+			String arrivalDate = em.getArrivalDate();
+			int rentDate = em.getRentDate();
+			int	amount = em.getAmount();
+			
+			Object[] row = {reservationId, paymentId, roomId, arrivalDate, rentDate, amount};
 			
 			dtm.addRow(row);
 		}
 	}
-	
-	private void loadCustomerList() {
+    
+	public void loadServiceList(){
 		DefaultTableModel dtm = new DefaultTableModel();
 		dtm.addColumn("Id");
-		dtm.addColumn("fullname");
-		dtm.addColumn("phone");
-		dtm.addColumn("gender");
-		dtm.addColumn("birthday");
-		dtm.addColumn("address");
-		table_2.setModel(dtm);
+		dtm.addColumn("Name");
+		dtm.addColumn("Price");
 		
-		ArrayList<CustomerDTO> arr = new ArrayList<CustomerDTO>();
-		arr = cusBUS.getAllCustomers();
+		reservationTable.setModel(dtm);
+		
+		ArrayList<ServiceDTO> arr = new ArrayList<ServiceDTO>();
+		arr = serviceBUS.getAllServices();
 		
 		for(int i = 0; i < arr.size(); i++){
-			CustomerDTO em = arr.get(i);
+			ServiceDTO em = arr.get(i);
 			
-			int id = em.getId();
-			String fullname = em.getFullname();
-			int phone = em.getPhone();
-			String gender = "";
-			if (em.getGender() == 0)
-				gender = "male";
-			else if (em.getGender() == 1)
-				gender = "female";
-			String birthday = em.getBirthday();
-			String address = em.getAddress();
+			int id = em.getServiceId();
+			String name = em.getName();
+			int price = em.getPrice();
 			
-			Object[] row = {id, fullname, phone, gender, birthday, address};
+			Object[] row = {id, name, price};
 			
 			dtm.addRow(row);
 		}

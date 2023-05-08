@@ -11,6 +11,7 @@ import BUS.ServiceBUS;
 import DTO.ServiceDTO;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout;
+import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class ServiceGUI extends javax.swing.JFrame {
@@ -35,6 +36,8 @@ public class ServiceGUI extends javax.swing.JFrame {
     private javax.swing.JTextField tfName;
     private javax.swing.JTextField tfPrice;
     private javax.swing.JTextField tfServiceID;
+    private javax.swing.JTextField tfSearch;
+    private javax.swing.JButton searchBtn;
     // End of variables declaration//GEN-END:variables
     
     public ServiceGUI() {
@@ -63,6 +66,8 @@ public class ServiceGUI extends javax.swing.JFrame {
         lblTitle = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        tfSearch = new javax.swing.JTextField();
+        searchBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Quản lý khách sạn");
@@ -115,7 +120,7 @@ public class ServiceGUI extends javax.swing.JFrame {
         addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (tfServiceID.getText().trim().equals("") || tfName.getText().trim().equals("") || tfPrice.getText().trim().equals(""))
+					if (tfServiceID.getText().trim().equals("") || tfName.getText().trim().equals(""))
 						lblError.setText("Vui lòng nhập đủ thông tin");
 					
 					else {
@@ -278,6 +283,25 @@ public class ServiceGUI extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(table);
+        
+        searchBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        searchBtn.setText("Search");
+        searchBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+                            try {
+                                if (tfSearch.getText().trim().equals("")) {
+                                    lblError.setText("Vui lòng nhập đầy đủ thông tin ");
+                                }
+                                
+                                else {
+                                    searchServiceByID();
+                                }
+                                
+                            } catch (NumberFormatException ex) {
+                                lblError.setText("Xảy ra lỗi");
+                            }
+			}
+		});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -294,7 +318,13 @@ public class ServiceGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1)
-                        .addContainerGap())))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(140, 140, 140)
+                        .addComponent(searchBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -307,7 +337,12 @@ public class ServiceGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(searchBtn)
+                            .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
     }// </editor-fold>//GEN-END:initComponents
@@ -364,6 +399,33 @@ public class ServiceGUI extends javax.swing.JFrame {
                 new ServiceGUI().setVisible(true);
             }
         });
+    }
+    
+        public void searchServiceByID() {
+        DefaultTableModel model = new DefaultTableModel();
+        ArrayList<ServiceDTO> arr = new ArrayList<ServiceDTO>();
+        arr = serviceBUS.getAllServices();
+        // Gọi phương thức searchCustomer từ CustomerBUS để tìm kiếm khách hàng
+        ServiceDTO em = new ServiceDTO();
+        int id = Integer.parseInt(tfSearch.getText().trim());
+        em.setServiceId(id);
+        String message = serviceBUS.searchService(em);
+
+        // Nếu tìm thấy khách hàng, cập nhật model và bôi đen hàng tương ứng
+        if (message.equals("thành công")) {
+            for (int i = 0; i < arr.size(); i++) {
+                ServiceDTO dto = arr.get(i);
+                if (dto.getServiceId()== id) {
+                    Object[] rowData = {dto.getServiceId(), dto.getName(), dto.getPrice()};
+                    model.addRow(rowData);
+                    table.setRowSelectionInterval(i, i);
+                    break;
+                }
+            }
+        
+        } else {
+            JOptionPane.showMessageDialog(null, message);
+        }
     }
     
 	public void loadServiceList(){

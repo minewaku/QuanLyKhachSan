@@ -9,6 +9,11 @@ import javax.swing.table.DefaultTableModel;
 
 import BUS.RoomBUS;
 import DTO.RoomDTO;
+import javax.swing.JOptionPane;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.GroupLayout;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JComboBox;
 
 public class RoomGUI extends javax.swing.JFrame {
 	
@@ -27,24 +32,20 @@ public class RoomGUI extends javax.swing.JFrame {
     private javax.swing.JLabel lblPrice;
     private javax.swing.JLabel lblRoomID;
     private javax.swing.JLabel lblSize;
-    private javax.swing.JLabel lblStatus;
     private javax.swing.JLabel lblTitle;
     private javax.swing.JLabel lblType;
     private javax.swing.JTable table;
     private javax.swing.JTextField tfPrice;
     private javax.swing.JTextField tfRoomID;
-    private javax.swing.JTextField tfSize;
-    private javax.swing.JTextField tfStatus;
-    private javax.swing.JTextField tfType;
+    private javax.swing.JTextField tfSearch;
+    private javax.swing.JButton searchBtn;
+
+    
     // End of variables declaration//GEN-END:variables
 	
     public RoomGUI() {
         initComponents();
-        setLocationRelativeTo(null);
-        setDefaultLookAndFeelDecorated(true);
-        setLocationRelativeTo(null);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setVisible(true);
+        loadRoomList();
     }
     
     @SuppressWarnings("unchecked")
@@ -57,21 +58,21 @@ public class RoomGUI extends javax.swing.JFrame {
         lblRoomID = new javax.swing.JLabel();
         tfRoomID = new javax.swing.JTextField();
         lblSize = new javax.swing.JLabel();
-        tfSize = new javax.swing.JTextField();
         lblType = new javax.swing.JLabel();
-        tfType = new javax.swing.JTextField();
         editBtn = new javax.swing.JButton();
         addBtn = new javax.swing.JButton();
         deleteBtn = new javax.swing.JButton();
         exitBtn = new javax.swing.JButton();
         lblPrice = new javax.swing.JLabel();
-        lblStatus = new javax.swing.JLabel();
-        tfStatus = new javax.swing.JTextField();
         lblError = new javax.swing.JLabel();
         tfPrice = new javax.swing.JTextField();
         lblTitle = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        searchBtn = new javax.swing.JButton();
+        tfSearch = new javax.swing.JTextField();
+        JComboBox tfSize = new JComboBox();
+        JComboBox tfType = new JComboBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Quản lý khách sạn");
@@ -101,7 +102,7 @@ public class RoomGUI extends javax.swing.JFrame {
         editBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (tfRoomID.getText().trim().equals("") || tfSize.getText().trim().equals("") || tfType.getText().trim().equals("") || tfPrice.getText().trim().equals(""))
+					if (tfRoomID.getText().trim().equals("") || tfSize.getSelectedItem().toString().trim().equals("") || tfType.getSelectedItem().toString().trim().equals("")|| tfPrice.getText().trim().equals(""))
 						lblError.setText("Vui lòng nhập đủ thông tin");
 					
 					else {
@@ -110,8 +111,8 @@ public class RoomGUI extends javax.swing.JFrame {
 						
 						RoomDTO em = new RoomDTO();
 						em.setRoomId(Integer.parseInt(tfRoomID.getText()));
-						em.setSize(tfSize.getText().trim());
-						em.setType(tfType.getText().trim());
+						em.setSize(tfSize.getSelectedItem().toString().trim());
+						em.setType(tfType.getSelectedItem().toString().trim());
 						em.setPrice(Integer.parseInt(tfPrice.getText()));
 						
 						lblError.setText(roomBUS.editRoom(em));
@@ -128,14 +129,14 @@ public class RoomGUI extends javax.swing.JFrame {
     	addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (tfRoomID.getText().trim().equals("") || tfSize.getText().trim().equals("") || tfType.getText().trim().equals("") || tfPrice.getText().trim().equals("") )
+					if (tfRoomID.getText().trim().equals("") || tfSize.getSelectedItem().toString().trim().equals("") || tfType.getSelectedItem().toString().trim().equals("") || tfPrice.getText().trim().equals("") )
 						lblError.setText("Vui lòng nhập đủ thông tin");
 					
 					else {
 						RoomDTO em = new RoomDTO();
 						em.setRoomId(Integer.parseInt(tfRoomID.getText()));
-						em.setSize(tfSize.getText().trim());
-						em.setType(tfType.getText().trim());
+						em.setSize(tfSize.getSelectedItem().toString().trim());
+						em.setType(tfType.getSelectedItem().toString().trim());
 						em.setPrice(Integer.parseInt(tfPrice.getText()));
 						
 						lblError.setText(roomBUS.addRoom(em));
@@ -189,83 +190,79 @@ public class RoomGUI extends javax.swing.JFrame {
         lblPrice.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         lblPrice.setText("Price");
 
-        lblStatus.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        lblStatus.setText("Status");
-
         lblError.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         lblError.setForeground(new java.awt.Color(255, 0, 0));
         lblError.setText("");
+        
+  
+        tfSize.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "small", "medium", "big" }));
+        
+        tfType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "single", "double" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(lblError, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel2Layout.createSequentialGroup()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(lblType, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblSize, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblRoomID, javax.swing.GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
-                                .addComponent(lblStatus, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(lblPrice, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGap(28, 28, 28)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(tfSize)
-                                .addComponent(tfType)
-                                .addComponent(tfStatus)
-                                .addGroup(jPanel2Layout.createSequentialGroup()
-                                    .addComponent(tfRoomID, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(0, 0, Short.MAX_VALUE))
-                                .addComponent(tfPrice)))
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(addBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(deleteBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGap(32, 32, 32)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(editBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
-                                .addComponent(exitBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
-                .addGap(19, 19, 19))
+        	jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(jPanel2Layout.createSequentialGroup()
+        			.addGap(18)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING, false)
+        				.addComponent(lblError, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        				.addGroup(jPanel2Layout.createSequentialGroup()
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING, false)
+        						.addComponent(lblType, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        						.addComponent(lblSize, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        						.addComponent(lblRoomID, GroupLayout.DEFAULT_SIZE, 64, Short.MAX_VALUE)
+        						.addComponent(lblPrice, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        					.addGap(28)
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        						.addComponent(tfPrice)
+        						.addGroup(jPanel2Layout.createSequentialGroup()
+        							.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING)
+        								.addComponent(tfSize, Alignment.LEADING, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        								.addComponent(tfRoomID, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+        								.addComponent(tfType, Alignment.LEADING, 0, 120, Short.MAX_VALUE))
+        							.addGap(0))))
+        				.addGroup(jPanel2Layout.createSequentialGroup()
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        						.addComponent(addBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        						.addComponent(deleteBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        					.addGap(32)
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING, false)
+        						.addComponent(editBtn, GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+        						.addComponent(exitBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+        			.addGap(19))
         );
         jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(15, 15, 15)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblRoomID)
-                    .addComponent(tfRoomID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblSize)
-                    .addComponent(tfSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblType)
-                    .addComponent(tfType, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblPrice)
-                    .addComponent(tfPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(11, 11, 11)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblStatus)
-                    .addComponent(tfStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(lblError, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(addBtn)
-                    .addComponent(editBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(deleteBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(exitBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(133, 133, 133))
+        	jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(jPanel2Layout.createSequentialGroup()
+        			.addGap(15)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(lblRoomID)
+        				.addComponent(tfRoomID, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(lblSize)
+        				.addComponent(tfSize, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(lblType)
+        				.addComponent(tfType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.UNRELATED)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(lblPrice)
+        				.addComponent(tfPrice, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addGap(41)
+        			.addComponent(lblError, GroupLayout.PREFERRED_SIZE, 24, GroupLayout.PREFERRED_SIZE)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(addBtn)
+        				.addComponent(editBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(deleteBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        				.addComponent(exitBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        			.addGap(133))
         );
+        jPanel2.setLayout(jPanel2Layout);
 
         javax.swing.GroupLayout contentPaneLayout = new javax.swing.GroupLayout(contentPane);
         contentPane.setLayout(contentPaneLayout);
@@ -308,6 +305,25 @@ public class RoomGUI extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(table);
+        
+        searchBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        searchBtn.setText("Search");
+        searchBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+                            try {
+                                if (tfSearch.getText().trim().equals("")) {
+                                    lblError.setText("Vui lòng nhập đầy đủ thông tin ");
+                                }
+                                
+                                else {
+                                    searchRoomByID();
+                                }
+                                
+                            } catch (NumberFormatException ex) {
+                                lblError.setText("Xảy ra lỗi");
+                            }
+			}
+		});
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -324,7 +340,13 @@ public class RoomGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1)
-                        .addContainerGap())))
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(124, 124, 124)
+                        .addComponent(searchBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -337,7 +359,12 @@ public class RoomGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(searchBtn)
+                            .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
 
     }// </editor-fold>//GEN-END:initComponents
@@ -396,6 +423,34 @@ public class RoomGUI extends javax.swing.JFrame {
         });
     }
     
+    
+        public void searchRoomByID() {
+        DefaultTableModel model = new DefaultTableModel();
+        ArrayList<RoomDTO> arr = new ArrayList<RoomDTO>();
+        arr = roomBUS.getAllRooms();
+        // Gọi phương thức searchCustomer từ CustomerBUS để tìm kiếm khách hàng
+        RoomDTO em = new RoomDTO();
+        int id = Integer.parseInt(tfSearch.getText().trim());
+        em.setRoomId(id);
+        String message = roomBUS.searchRoom(em);
+
+        // Nếu tìm thấy khách hàng, cập nhật model và bôi đen hàng tương ứng
+        if (message.equals("true")) {
+            for (int i = 0; i < arr.size(); i++) {
+                RoomDTO dto = arr.get(i);
+                if (dto.getRoomId()== id) {
+                    Object[] rowData = {dto.getRoomId(), dto.getSize(), dto.getType(), dto.getStatus()};
+                    model.addRow(rowData);
+                    table.setRowSelectionInterval(i, i);
+                    break;
+                }
+            }
+        
+        } else {
+            JOptionPane.showMessageDialog(null, message);
+        }
+    }
+    
 	
 	public void loadRoomList(){
 		DefaultTableModel dtm = new DefaultTableModel();
@@ -424,5 +479,4 @@ public class RoomGUI extends javax.swing.JFrame {
 			dtm.addRow(row);
 		}
 	}
-
 }

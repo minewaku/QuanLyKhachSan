@@ -9,8 +9,6 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 import DTO.ReservationsDTO;
 import DTO.RoomDTO;
@@ -53,11 +51,11 @@ public class ReservationsDAO {
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
 					ReservationsDTO em = new ReservationsDTO();
-					em.setReservationId(rs.getInt("paymentId"));
-					em.setPaymentId(rs.getInt("customerId"));
+					em.setReservationId(rs.getInt("reservationId"));
+					em.setPaymentId(rs.getInt("paymentId"));
 					em.setRoomId(rs.getInt("roomId"));
 					em.setArrivalDate(rs.getString("arrivalDate"));
-					em.setDepartureDate(rs.getString("departureDate"));
+					em.setRentDate(rs.getInt("rentDate"));
 					em.setAmount(rs.getInt("amount")); 
 
 					arr.add(em); 
@@ -72,19 +70,20 @@ public class ReservationsDAO {
 		return arr;
 	}
 	
-	public boolean addReservations(ReservationsDTO payment) {
+	public boolean addReservations(ReservationsDTO reservation) {
 		boolean result = false;
 		if (openConnection()) {
 			try {
-				String sql = "Insert into Reservations(reservationId, paymentId, roomId, arrivalDate, departureDate, amount) values(?, ?, ?, ?, ?, ?)"; 
+				String sql = "SET IDENTITY_INSERT Reservations ON Insert into Reservations(reservationId, paymentId, roomId, arrivalDate, rentDate, amount) values(?, ?, ?, ?, ?, ?) SET IDENTITY_INSERT Reservations OFF"; 
 				PreparedStatement stmt = con.prepareStatement(sql);
 				ReservationsDTO em = new ReservationsDTO();
-				stmt.setInt(1, payment.getReservationId());
-				stmt.setInt(2, payment.getPaymentId());
-				stmt.setInt(3, payment.getRoomId());
-				stmt.setString(2, payment.getArrivalDate());
-				stmt.setString(2, payment.getDepartureDate());
-				stmt.setInt(4, calAmount(em, em.getRoomId()));
+				stmt.setInt(1, reservation.getReservationId());
+				stmt.setInt(2, reservation.getPaymentId());
+				stmt.setInt(3, reservation.getRoomId());
+				updateRoomStatus(reservation.getRoomId());
+				stmt.setString(4, reservation.getArrivalDate());
+				stmt.setInt(5, reservation.getRentDate());
+				stmt.setInt(6, calAmount(em, em.getRoomId()));
 				
 				if (stmt.executeUpdate()>=1)
 					result = true;
@@ -100,43 +99,57 @@ public class ReservationsDAO {
 	}
 	
 	public boolean editReservations(ReservationsDTO reservation) {
-		boolean result = false;
-		
-		if (openConnection()) {
-			try { 
-				String sql = "update Reservations set ";
-				Statement stmt = con.createStatement();
+	    boolean result = false;
+	    if (openConnection()) {
+	        try {
+	        	String sql_getOldRoom = "select * from Reservations where reservationId = " +reservation.getReservationId();
+				Statement stmt_getOldRoom = con.createStatement();
+				ResultSet rs = stmt_getOldRoom.executeQuery(sql_getOldRoom);
+				result = rs.next();
 				
-				sql = sql + "reservationId = " + "'" + reservation.getReservationId() + "'" + ", ";
-				sql = sql + "paymentId = " + "'" + reservation.getPaymentId() + "'" + ", ";
-				sql = sql + "roomId = " + "'" + reservation.getRoomId() + "'" + ", ";
-				sql = sql + "arrivalDate = " + reservation.getArrivalDate() + ", ";
-				sql = sql + "departureDate = " + "'" + reservation.getDepartureDate() + "'" + ", ";
-				sql = sql + "amount = " + "'" + calAmount(reservation, reservation.getRoomId()) + "'" + ", ";
+				int oldRoomId = rs.getInt("roomId");
 				
-				sql = sql + "where reservationId = " + reservation.getReservationId() + ";";
-				
-				if (stmt.executeUpdate(sql)>=1)
-					result = true;
+				String sql_releaseOldRoom = "Update Room set status = 0"  + " where roomId = " + oldRoomId + ";";
+				Statement stmt_releaseOldRoom = con.createStatement();
+				stmt_releaseOldRoom.execute(sql_releaseOldRoom);
+	        	
+	            String sql = "update Reservations set ";
+	            sql += "paymentId = ?, roomId = ?, arrivalDate = ?, rentDate = ?, amount = ? ";
+	            sql += "where reservationId = ?";
 
-			} catch (SQLException ex) {
-				System.out.println(ex);
-			} finally{
-				closeConnection();
-			} 
-		}
-		
-		return result;
+	            PreparedStatement stmt = con.prepareStatement(sql);
+	            stmt.setInt(1, reservation.getPaymentId());
+	            stmt.setInt(2, reservation.getRoomId());
+	            stmt.setString(3, reservation.getArrivalDate());
+	            stmt.setInt(4, reservation.getRentDate());
+	            stmt.setInt(5, calAmount(reservation, reservation.getRoomId()));
+	            stmt.setInt(6, reservation.getReservationId());
+	            
+	            updateRoomStatus(reservation.getRoomId());
+
+	            if (stmt.executeUpdate() >= 1)
+	                result = true;
+
+	        } catch (SQLException ex) {
+	            System.out.println(ex);
+	        } finally {
+	            closeConnection();
+	        }
+	    }
+
+	    return result;
 	}
 	
 	public boolean deleteReservations(ReservationsDTO reservation) {
 		boolean result = false;
 		if (openConnection()) {
 			try {
-				String sql = "delete from Reservations where reservationtId = " + reservation.getReservationId();
+				String sql = "delete from Reservations where reservationId = " + reservation.getReservationId();
 				PreparedStatement stmt = con.prepareStatement(sql);
-				if (stmt.executeUpdate()>=1)
+				if (stmt.executeUpdate() >= 1) {
 					result = true;
+					releaseRoomStatus(reservation.getReservationId());
+				}
 
 			} catch (SQLException ex) {
 				System.out.println(ex);
@@ -164,9 +177,24 @@ public class ReservationsDAO {
 		return result;
 	}
 	
-	public static long getDifferenceDays(Date d1, Date d2) {
-		long diff = d2.getTime() - d1.getTime();
-		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+	public boolean checkRoomStatus(int reservationId, int roomId) {
+			
+		boolean result = false;
+		
+		if (openConnection()) {
+			try {
+				String sql = "Select * from Reservations where reservationId = " + reservationId + " and " + "roomId != " + roomId;
+				Statement stmt = con.createStatement();
+				result = stmt.execute(sql);
+				if (result) {
+					String sql1 = "Select * from Room where roomId = " + roomId + " and status = 0;";
+					Statement stmt1 = con.createStatement();
+					result = stmt1.execute(sql1);
+				}
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally { closeConnection(); } }
+		return result;
 	}
 	
 	public int calAmount(ReservationsDTO reservations, int id) {
@@ -174,19 +202,15 @@ public class ReservationsDAO {
 		
 		if (openConnection()) {
 			try {
-				String sql = "Select * from Room where roomId = " + id;
+				String sql = "Select * from Room where roomId = " + id + ";";
 				Statement stmt = con.createStatement();
 				ResultSet rs = stmt.executeQuery(sql);
 				rs.next();
-				
 				RoomDTO room = new RoomDTO();
 				room.setPrice(rs.getInt("price"));
+				System.out.println(room.toString());
 				
-				Date date1 = new SimpleDateFormat("MM/dd/yyyy").parse(reservations.getArrivalDate());  
-				Date date2 = new SimpleDateFormat("MM/dd/yyyy").parse(reservations.getDepartureDate());  
-				long date = getDifferenceDays(date1, date2);
-				
-				amount = (int) date * room.getPrice();
+				amount = reservations.getRentDate() * room.getPrice();
 			}
 			
 			catch (Exception ex) {
@@ -194,10 +218,11 @@ public class ReservationsDAO {
 			} 
 			finally { closeConnection(); } 
 		}
+		
 		return amount;
 	}
 	
-	 public boolean checkIfDateIsValid(String date) {
+	public boolean checkIfDateIsValid(String date) {
 	        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 	        format.setLenient(false);
 	        try {
@@ -207,5 +232,53 @@ public class ReservationsDAO {
 	        }
 	        return true;
 	 }
+	 
+	 public void updateRoomStatus(int id) {
+
+			if (openConnection()) {
+				try {
+					String sql = "Update Room set status = 1"  + " where roomId = " + id + ";";
+					Statement stmt = con.createStatement();
+					stmt.execute(sql);
+				}
+				
+				catch (Exception ex) {
+					System.out.println(ex);
+				} 
+				finally { closeConnection(); } 
+			}
+	 }
+	 
+	 public void releaseRoomStatus(int id) {
+
+			if (openConnection()) {
+				try {
+					String sql = "Update Room set status = 0"  + " where roomId = " + id + ";";
+					Statement stmt = con.createStatement();
+					stmt.execute(sql);
+				}
+				
+				catch (Exception ex) {
+					System.out.println(ex);
+				} 
+				finally { closeConnection(); } 
+			}
+	 }
+	 
+	public boolean hasRoomId(int reservationId, int roomId){
+		boolean result = false;
+		
+		if (openConnection()) {
+			try {
+				String sql = "Select * from Reservations where roomId = " + roomId + " and " + "reservationId != " + reservationId;
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				result = rs.next();
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally { closeConnection(); } }
+		return result;
+	}
 }
+
 

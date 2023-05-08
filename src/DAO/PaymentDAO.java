@@ -106,7 +106,7 @@ public class PaymentDAO {
 				
 				sql = sql + "paymentId = " + payment.getPaymentId() + ", ";
 				sql = sql + "customerId = " + payment.getCustomerId() + ", ";
-				sql = sql + "staffId = " + payment.getStaffId() + ", ";
+				sql = sql + "staffId = " + loginGUI.loginUser.getId() + " ";
 				
 				sql = sql + "where paymentId = " + payment.getPaymentId() + ";";
 				
@@ -148,7 +148,7 @@ public class PaymentDAO {
 		
 		if (openConnection()) {
 			try {
-				String sql = "Select * from Payment where payemntId = " + id;
+				String sql = "Select * from Payment where paymentId = " + id;
 				Statement stmt = con.createStatement();
 				ResultSet rs = stmt.executeQuery(sql);
 				result = rs.next();

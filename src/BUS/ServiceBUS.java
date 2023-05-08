@@ -47,5 +47,15 @@ public class ServiceBUS {
 		
 		return "Xóa thất bại";
 	}
+        
+        public String searchService(ServiceDTO Service) {
+		if (!service.hasServiceID(Service.getServiceId()))
+			return "Mã Dịch Vụ không tồn tại";
+		
+		if (service.deleteService(Service))
+			return "thành công";
+		
+		return "Không tìm thấy Mã Dịch Vụ";
+	}
 	
 }

@@ -29,10 +29,6 @@ public class LoginGUI extends JFrame {
     StaffBUS staffBUS = new StaffBUS();
     
     static public StaffDTO loginUser = new StaffDTO();
-
-	public static void main(String[] args) {
-		LoginGUI frame = new LoginGUI();
-	}
 	
 	public LoginGUI() {
 		initComponents();

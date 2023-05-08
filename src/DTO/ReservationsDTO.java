@@ -6,7 +6,7 @@ public class ReservationsDTO {
 	private int paymentId;
 	private int roomId;
 	private String arrivalDate;
-	private String departureDate;
+	private int rentDate;
 	private int amount;
 	
 //	GETTER / SETTER
@@ -34,12 +34,14 @@ public class ReservationsDTO {
 	public void setArrivalDate(String arrivalDate) {
 		this.arrivalDate = arrivalDate;
 	}
-	public String getDepartureDate() {
-		return departureDate;
+	
+	public int getRentDate() {
+		return rentDate;
 	}
-	public void setDepartureDate(String departureDate) {
-		this.departureDate = departureDate;
+	public void setRentDate(int rentDate) {
+		this.rentDate = rentDate;
 	}
+
 	public int getAmount() {
 		return amount;
 	}
@@ -51,12 +53,12 @@ public class ReservationsDTO {
 	public ReservationsDTO() {
 		
 	}
-	public ReservationsDTO(int reservationId, int paymentId, int roomId, String arrivalDate, String departureDate, int amount) {
+	public ReservationsDTO(int reservationId, int paymentId, int roomId, String arrivalDate, int rentDate, int amount) {
 		this.reservationId = reservationId;
 		this.paymentId = paymentId;
 		this.roomId = roomId;
 		this.arrivalDate = arrivalDate;
-		this.departureDate = departureDate;
+		this.rentDate = rentDate;
 		this.amount = amount;
 	}
 	public ReservationsDTO(ReservationsDTO x) {
@@ -64,7 +66,7 @@ public class ReservationsDTO {
 		this.paymentId = x.paymentId;
 		this.roomId = x.roomId;
 		this.arrivalDate = x.arrivalDate;
-		this.departureDate = x.departureDate;
+		this.rentDate = x.rentDate;
 		this.amount = x.amount;
 	}
 }

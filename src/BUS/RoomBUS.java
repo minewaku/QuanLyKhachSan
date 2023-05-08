@@ -49,5 +49,15 @@ public class RoomBUS {
 		
 		return "Xóa thất bại";
 	}
+        
+        public String searchRoom(RoomDTO Room) {
+		if (!room.hasRoomId(Room.getRoomId()))
+			return "Mã Phòng không tồn tại";
+		
+		if (room.searchRoom(Room))
+			return "thành công";
+		
+		return "Không tìm thấy Mã Phòng";
+	}
 		
 }

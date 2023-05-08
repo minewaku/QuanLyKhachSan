@@ -114,6 +114,7 @@ public class PaymentGUI extends javax.swing.JFrame {
 						
 						lblError.setText(paymentBUS.editPayment(em, em.getCustomerId()));
 						loadPaymentList();
+						loadCustomerList();
 					}	
 				} catch (NumberFormatException ex) {
 					lblError.setText("Thông tin không hợp lệ");
@@ -136,6 +137,7 @@ public class PaymentGUI extends javax.swing.JFrame {
 						
 						lblError.setText(paymentBUS.addPayment(em, em.getCustomerId()));
 						loadPaymentList();
+						loadCustomerList();
 					}	
 				} catch (NumberFormatException ex) {
 					lblError.setText("Thông tin không hợp lệ");
@@ -156,7 +158,7 @@ public class PaymentGUI extends javax.swing.JFrame {
 						em.setPaymentId(Integer.parseInt(tfPaymentId.getText().trim()));
 						
 						lblError.setText(paymentBUS.deletePayment(em));
-						loadCustomerList();
+						loadPaymentList();
 					}	
 				} catch (NumberFormatException ex) {
 					lblError.setText("Xảy ra lỗi");

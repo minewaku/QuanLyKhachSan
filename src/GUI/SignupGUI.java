@@ -19,6 +19,8 @@ import javax.swing.border.EmptyBorder;
 
 import BUS.StaffBUS;
 import DTO.StaffDTO;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 
 public class SignupGUI extends JFrame {
 
@@ -140,13 +142,18 @@ public class SignupGUI extends JFrame {
 		gbc_lblGender.gridy = 6;
 		formPane.add(lblGender, gbc_lblGender);
 		
-		JTextField tfGender = new JTextField(30);
-		tfGender.setFont(new Font("Tahoma", Font.PLAIN, 22));
+//		JTextField tfGender = new JTextField(30);
+                JComboBox<String> comboBox = new JComboBox<>();
+                DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+                model.addElement("Nam");
+                model.addElement("Nữ");
+                comboBox.setModel(model);
+		comboBox.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		GridBagConstraints gbc_tfGender = new GridBagConstraints();
-		gbc_tfGender.insets = new Insets(0, 0, 32, 0);
+		gbc_tfGender.insets = new Insets(0, 0, 32, 500);
 		gbc_tfGender.gridx = 1;
 		gbc_tfGender.gridy = 6;
-		formPane.add(tfGender, gbc_tfGender);
+		formPane.add(comboBox, gbc_tfGender);
 		
 //		birthday
 		JLabel lblBirthday = new JLabel("Birthday:");
@@ -188,7 +195,7 @@ public class SignupGUI extends JFrame {
 		btnSignup.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (tfID.getText().trim().equals("") || tfFullname.getText().trim().equals("") || tfPhone.getText().trim().equals("") || tfGender.getText().trim().equals("") || tfBirthday.getText().trim().equals("") || tfPassword.getText().trim().equals(""))
+					if (tfID.getText().trim().equals("") || tfFullname.getText().trim().equals("") || tfPhone.getText().trim().equals("") || comboBox.getSelectedItem().equals("") || tfBirthday.getText().trim().equals("") || tfPassword.getText().trim().equals(""))
 						lblError.setText("Vui lòng nhập đủ thông tin");
 					
 					else {
@@ -196,7 +203,9 @@ public class SignupGUI extends JFrame {
 						em.setId(Integer.parseInt(tfID.getText().trim()));
 						em.setFullname(tfFullname.getText().trim());
 						em.setPhone(Integer.parseInt(tfPhone.getText().trim()));
-						em.setGender(Integer.parseInt(tfGender.getText().trim()));
+                                                String selectedValue = comboBox.getSelectedItem().toString();
+                                                int gender = selectedValue.equals("Nam") ? 0 : 1;
+						em.setGender(gender);
 						em.setBirthday(tfBirthday.getText().trim());
 						em.setSalary(0);
 						em.setPassword(tfPassword.getText().trim());

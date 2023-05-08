@@ -142,7 +142,25 @@ public class CustomerDAO {
 		return result;
 	}
 	
+        public boolean searchCustomer(CustomerDTO cus) {
+                boolean result = false;
+                if (openConnection()) {
+                    try {
+                    String sql = "SELECT * FROM Customer WHERE customerId = " + cus.getId();
+                    Statement stmt = con.createStatement();
+                    ResultSet rs = stmt.executeQuery(sql);
+                    result = rs.next();
 
+                    } catch (SQLException ex) {
+				System.out.println(ex);
+                    } finally{
+				closeConnection();
+                    } 
+                }
+                return result;
+        }
+        
+        
 	public boolean hasCustomerID(int id){
 		boolean result = false;
 		

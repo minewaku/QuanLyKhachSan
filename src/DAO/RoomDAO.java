@@ -196,7 +196,25 @@ public class RoomDAO {
 		return result;
 	}
 	
+    public boolean searchRoom(RoomDTO room) {
+		boolean result = false;
+		if (openConnection()) {
+			try {
+				String sql = "Select * from Room where roomId = " + room.getRoomId();
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				result = rs.next();
 
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally{
+				closeConnection();
+			} 
+		}
+		
+		return result;
+	}
+        
 	public boolean hasRoomId(int id){
 		boolean result = false;
 		
@@ -226,5 +244,4 @@ public class RoomDAO {
 			} finally { closeConnection(); } }
 		return result;
 	}
-	
 }

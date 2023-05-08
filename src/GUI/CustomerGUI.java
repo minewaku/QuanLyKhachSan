@@ -10,15 +10,19 @@ import javax.swing.table.DefaultTableModel;
 
 import BUS.CustomerBUS;
 import DTO.CustomerDTO;
+import com.sun.jdi.connect.spi.Connection;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout;
+import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class CustomerGUI extends javax.swing.JFrame {
 	
 	CustomerBUS cusBUS = new CustomerBUS();
 
-    // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addBtn;
     private javax.swing.JPanel contentPane;
     private javax.swing.JButton deleteBtn;
@@ -42,11 +46,20 @@ public class CustomerGUI extends javax.swing.JFrame {
     private javax.swing.JTextField tfFullname;
     private javax.swing.JComboBox<String> tfGender;
     private javax.swing.JTextField tfPhone;
+    private javax.swing.JTextField tfSearch;
+    private javax.swing.JButton searchBtn;
+    private ListSelectionModel selectionModel;
+    private int selectedRow = -1;
+
+    
     // End of variables declaration//GEN-END:variables
     
     public CustomerGUI() {
         initComponents();
         loadCustomerList();
+        setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setVisible(true);
     }
     
     @SuppressWarnings("unchecked")
@@ -76,6 +89,8 @@ public class CustomerGUI extends javax.swing.JFrame {
         lblTitle = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        tfSearch = new javax.swing.JTextField();
+        searchBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Quản lý khách sạn");
@@ -309,20 +324,30 @@ public class CustomerGUI extends javax.swing.JFrame {
 
         table.setBackground(new java.awt.Color(192, 192, 192));
         table.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        table.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null, null}
-            },
-            new String [] {
-                "Customer ID", "Fullname", "Phone", "Gender", "Date of Birth", "Address"
-            }
-        ));
-        table.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tableMouseClicked(evt);
-            }
-        });
+
         jScrollPane1.setViewportView(table);
+        
+        searchBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        searchBtn.setText("Search");
+        searchBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+                            try {
+                                if (tfSearch.getText().trim().equals("")) {
+                                    lblError.setText("Vui lòng nhập đầy đủ thông tin ");
+                                }
+                                
+                                else {
+                                    searchCustomerByID();
+                                }
+                                
+                            } catch (NumberFormatException ex) {
+                                lblError.setText("Xảy ra lỗi");
+                            }
+			}
+		});
+
+
+
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -339,8 +364,15 @@ public class CustomerGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1)
-                        .addContainerGap())))
-        );
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(192, 192, 192)
+                        .addComponent(searchBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                );
+        
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
@@ -352,31 +384,19 @@ public class CustomerGUI extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(tfSearch)
+                            .addComponent(searchBtn))
+                        .addGap(50, 50, 50))))
         );
 
     }// </editor-fold>//GEN-END:initComponents
 
-    private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
-        
-    }//GEN-LAST:event_editBtnActionPerformed
-
-    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-        
-    }//GEN-LAST:event_addBtnActionPerformed
-
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
 
     }//GEN-LAST:event_tableMouseClicked
-
-    private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
-
-    }//GEN-LAST:event_exitBtnActionPerformed
-
-    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-       
-    }//GEN-LAST:event_deleteBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -412,6 +432,33 @@ public class CustomerGUI extends javax.swing.JFrame {
         });
     }
     
+    public void searchCustomerByID() {
+        DefaultTableModel model = new DefaultTableModel();
+        ArrayList<CustomerDTO> arr = new ArrayList<CustomerDTO>();
+        arr = cusBUS.getAllCustomers();
+        // Gọi phương thức searchCustomer từ CustomerBUS để tìm kiếm khách hàng
+        CustomerDTO em = new CustomerDTO();
+        int id = Integer.parseInt(tfSearch.getText().trim());
+        em.setId(id);
+        String message = cusBUS.searchCustomer(em);
+
+        // Nếu tìm thấy khách hàng, cập nhật model và bôi đen hàng tương ứng
+        if (message.equals("true")) {
+            for (int i = 0; i < arr.size(); i++) {
+                CustomerDTO dto = arr.get(i);
+                if (dto.getId() == id) {
+                    Object[] rowData = {dto.getId(), dto.getFullname(), dto.getPhone(), dto.getGender(), dto.getBirthday(), dto.getAddress()};
+                    model.addRow(rowData);
+                    table.setRowSelectionInterval(i, i);
+                    break;
+                }
+            }
+        
+        } else {
+            JOptionPane.showMessageDialog(null, message);
+        }
+    }
+    
     public void loadCustomerList(){
 		DefaultTableModel dtm = new DefaultTableModel();
 		dtm.addColumn("Id");
@@ -444,4 +491,5 @@ public class CustomerGUI extends javax.swing.JFrame {
 			dtm.addRow(row);
 		}
 	}
+    
 }

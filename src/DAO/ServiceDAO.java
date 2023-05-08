@@ -27,6 +27,7 @@ public class ServiceDAO {
 		}
 	}
 	
+	
 	public void closeConnection() {
 		try {
 			if (con!=null)
@@ -131,6 +132,24 @@ public class ServiceDAO {
 		return result;
 	}
 	
+        public boolean searchCustomer(ServiceDTO service) {
+                boolean result = false;
+                if (openConnection()) {
+                    try {
+                    String sql = "SELECT * FROM Customer WHERE customerId = " + service.getServiceId();
+                    Statement stmt = con.createStatement();
+                    ResultSet rs = stmt.executeQuery(sql);
+                    result = rs.next();
+
+                    } catch (SQLException ex) {
+				System.out.println(ex);
+                    } finally{
+				closeConnection();
+                    } 
+                }
+                return result;
+        }
+        
 
 	public boolean hasServiceID(int id){
 		boolean result = false;
@@ -161,5 +180,4 @@ public class ServiceDAO {
 			} finally { closeConnection(); } }
 		return result;
 	}
-	
 }

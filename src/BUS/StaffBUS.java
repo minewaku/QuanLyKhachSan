@@ -2,6 +2,7 @@ package BUS;
 import java.util.ArrayList;
 
 import DAO.StaffDAO;
+import DTO.CustomerDTO;
 import DTO.StaffDTO;
 
 public class StaffBUS {
@@ -40,7 +41,7 @@ public class StaffBUS {
 		if (staff.checkValidPhone(Staff.getPhone()))
 			return "Số điện thoại không hợp lệ";
 		
-		if (staff.checkIfDateIsValid(Staff.getBirthday()))
+		if (!staff.checkIfDateIsValid(Staff.getBirthday()))
 			return "Ngày không hợp lệ (MM/dd/yyyy)";
 		
 		if (staff.editStaff(Staff))
@@ -70,4 +71,13 @@ public class StaffBUS {
 		return staff.loginUser(Staff.getId(), Staff.getPassword());
 	}
 	
+        public String searchStaff(StaffDTO Staff) {
+            if (!staff.hasStaffID(Staff.getId()))
+			return "Mã Nhân Viên không tồn tại";
+		
+		if (staff.deleteStaff(Staff))
+			return "thành công";
+		
+		return "Không tìm thấy Mã Khách Hàng";
+        }
 }

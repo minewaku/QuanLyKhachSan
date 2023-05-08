@@ -13,12 +13,8 @@ import javax.swing.UIManager;
 public class Main extends JFrame {
 	public Main() {
 	}
-
 	private JPanel contentPane;
 
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
 
 		JFrame.setDefaultLookAndFeelDecorated(false);

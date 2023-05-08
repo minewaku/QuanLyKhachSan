@@ -1,17 +1,23 @@
 package GUI;
 
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.GroupLayout;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.awt.event.ActionEvent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.LineBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import BUS.PaymentBUS;
@@ -20,11 +26,6 @@ import BUS.RoomBUS;
 import DTO.PaymentDTO;
 import DTO.ReservationsDTO;
 import DTO.RoomDTO;
-
-import javax.swing.JScrollPane;
-import java.awt.FlowLayout;
-import javax.swing.border.LineBorder;
-import javax.swing.JTable;
 
 public class ReservationsGUI extends javax.swing.JFrame {
 	
@@ -38,28 +39,26 @@ public class ReservationsGUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable reservationTable;
     private javax.swing.JTextField tfReservationId;
     private javax.swing.JTextField tfPaymentId;
     private javax.swing.JTextField tfRoomId;
     private javax.swing.JTextField tfArrivalDate;
-    private javax.swing.JTextField tfDepertureDate;
-    private javax.swing.JTextField tfAmount;
+    private javax.swing.JTextField tfRentDate;
     private JPanel panel;
     private JLabel lblNewLabel;
     private JPanel panel_1;
     private JLabel lblDanhSchPhng;
     private JScrollPane scrollPane;
-    private JTable table;
+    private JTable paymentTable;
     private JPanel panel_2;
     private JLabel lblThanhTon;
     private JScrollPane scrollPane_1;
-    private JTable table_1;
+    private JTable roomTable;
     
     ReservationBUS reservationBUS = new ReservationBUS();
     PaymentBUS paymentBUS = new PaymentBUS();
@@ -71,11 +70,6 @@ public class ReservationsGUI extends javax.swing.JFrame {
         loadReservationList();
         loadPaymentList();
         loadRoomList();
-        ReservationsGUI.setDefaultLookAndFeelDecorated(true);
-		setLocationRelativeTo(null);
-		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setUndecorated(true);
-		setVisible(true);
     }
 
    
@@ -94,28 +88,22 @@ public class ReservationsGUI extends javax.swing.JFrame {
         jLabel5 = new javax.swing.JLabel();
         tfArrivalDate = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
-        tfDepertureDate = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        tfAmount = new javax.swing.JTextField();
+        tfRentDate = new javax.swing.JTextField();
         editBtn = new javax.swing.JButton();
         addBtn = new javax.swing.JButton();
-        addBtn.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        	}
-        });
         deleteBtn = new javax.swing.JButton();
         exitBtn = new javax.swing.JButton();
+        JLabel lblError = new JLabel("");
         jLabel9 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Quản lý đặt phòng");
         setBackground(new java.awt.Color(204, 255, 204));
 
         jPanel1.setBackground(new java.awt.Color(192, 192, 192));
         jPanel1.setBorder(javax.swing.BorderFactory.createCompoundBorder());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel1.setText("Thông tin đặt phòng");
+        jLabel1.setText("Reservation information");
 
         jPanel2.setBackground(new java.awt.Color(192, 192, 192));
         jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -133,56 +121,134 @@ public class ReservationsGUI extends javax.swing.JFrame {
         jLabel5.setText("Arrival Date");
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel6.setText("Departure Date");
-
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel7.setText("Amount");
+        jLabel6.setText("Rent Date");
 
         editBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        editBtn.setText("Sửa");
+        editBtn.setText("edit");
         editBtn.setMaximumSize(new java.awt.Dimension(78, 31));
+        editBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (tfReservationId.getText().trim().equals("") || tfPaymentId.getText().trim().equals("") || tfRoomId.getText().trim().equals("") || tfArrivalDate.getText().trim().equals("") || tfRentDate.getText().trim().equals(""))
+						lblError.setText("Vui lòng nhập đủ thông tin");
+					
+					else {
+						ReservationsDTO em = new ReservationsDTO();
+						em.setReservationId(Integer.parseInt(tfReservationId.getText().trim()));
+						em.setPaymentId(Integer.parseInt(tfPaymentId.getText().trim()));
+						em.setRoomId(Integer.parseInt(tfRoomId.getText().trim()));
+						em.setArrivalDate(tfArrivalDate.getText().trim());
+						em.setRentDate(Integer.parseInt(tfRentDate.getText().trim()));
+						
+						lblError.setText(reservationBUS.editReservations(em, em.getPaymentId(), em.getRoomId()));
+
+						loadReservationList();
+						loadPaymentList();
+						loadRoomList();
+					}	
+				} catch (NumberFormatException ex) {
+					lblError.setText("Thông tin không hợp lệ");
+				}
+			}
+		});
  
         addBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        addBtn.setText("Thêm");
+        addBtn.setText("add");
+        addBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (tfReservationId.getText().trim().equals("") || tfPaymentId.getText().trim().equals("") || tfRoomId.getText().trim().equals("") || tfArrivalDate.getText().trim().equals("") || tfRentDate.getText().trim().equals(""))
+						lblError.setText("Vui lòng nhập đủ thông tin");
+					
+					else {
+						ReservationsDTO em = new ReservationsDTO();
+						em.setReservationId(Integer.parseInt(tfReservationId.getText()));
+						em.setPaymentId(Integer.parseInt(tfPaymentId.getText()));
+						em.setRoomId(Integer.parseInt(tfRoomId.getText()));
+						em.setArrivalDate(tfArrivalDate.getText().trim());
+						em.setRentDate(Integer.parseInt(tfRentDate.getText()));
+						
+						lblError.setText(reservationBUS.addReservations(em, em.getPaymentId(), em.getRoomId()));
+
+						loadReservationList();
+						loadPaymentList();
+						loadRoomList();
+					}	
+				} catch (NumberFormatException ex) {
+					lblError.setText("Thông tin không hợp lệ");
+				}
+			}
+		});
 
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        deleteBtn.setText("Xóa");
+        deleteBtn.setText("delele");
+        deleteBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					if (tfReservationId.getText().trim().equals(""))
+						lblError.setText("Vui lòng nhập đủ thông tin");
+					
+					else {
+						ReservationsDTO em = new ReservationsDTO();
+						em.setReservationId(Integer.parseInt(tfReservationId.getText().trim()));
+						
+						lblError.setText(reservationBUS.deleteReservations(em));
+						loadReservationList();
+						loadPaymentList();
+						loadRoomList();
+					}	
+				} catch (NumberFormatException ex) {
+					lblError.setText("Xảy ra lỗi");
+				}
+			}
+		});
 
         exitBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        exitBtn.setText("Thoát");
+        exitBtn.setText("exit");
+        exitBtn.addActionListener(new ActionListener() {
+     			public void actionPerformed(ActionEvent e) {
+     				dispose();
+     				JFrame.setDefaultLookAndFeelDecorated(false);
+     				
+     		        MenuGUI frame = new MenuGUI();
+     				frame.setLocationRelativeTo(null);
+     				frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+     				frame.setUndecorated(true);
+     				frame.setVisible(true);
+     			}
+     		});
+        
+
+        lblError.setForeground(new Color(255, 0, 128));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2Layout.setHorizontalGroup(
         	jPanel2Layout.createParallelGroup(Alignment.TRAILING)
         		.addGroup(jPanel2Layout.createSequentialGroup()
         			.addGap(18)
-        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING)
+        				.addComponent(lblError, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
         				.addComponent(editBtn, GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
         				.addComponent(addBtn, GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
-        				.addGroup(Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
-        						.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING)
-        							.addGroup(jPanel2Layout.createSequentialGroup()
-        								.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
-        									.addComponent(jLabel2)
-        									.addComponent(jLabel3, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
-        									.addComponent(jLabel4))
-        								.addGap(25))
-        							.addGroup(jPanel2Layout.createSequentialGroup()
-        								.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING)
-        									.addComponent(jLabel5, GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
-        									.addComponent(jLabel6, GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE))
-        								.addPreferredGap(ComponentPlacement.RELATED)))
+        				.addGroup(jPanel2Layout.createSequentialGroup()
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING)
         						.addGroup(jPanel2Layout.createSequentialGroup()
-        							.addComponent(jLabel7)
-        							.addGap(43)))
+        							.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        								.addComponent(jLabel2)
+        								.addComponent(jLabel3, GroupLayout.PREFERRED_SIZE, 125, GroupLayout.PREFERRED_SIZE)
+        								.addComponent(jLabel4))
+        							.addGap(25))
+        						.addGroup(jPanel2Layout.createSequentialGroup()
+        							.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING)
+        								.addComponent(jLabel5, GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE)
+        								.addComponent(jLabel6, GroupLayout.DEFAULT_SIZE, 146, Short.MAX_VALUE))
+        							.addPreferredGap(ComponentPlacement.RELATED)))
         					.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
         						.addComponent(tfArrivalDate, 137, 137, Short.MAX_VALUE)
         						.addComponent(tfRoomId, 137, 137, Short.MAX_VALUE)
         						.addComponent(tfPaymentId, 137, 137, Short.MAX_VALUE)
         						.addComponent(tfReservationId, GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
-        						.addComponent(tfDepertureDate, GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
-        						.addComponent(tfAmount, GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)))
+        						.addComponent(tfRentDate, GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)))
         				.addComponent(exitBtn, GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE)
         				.addComponent(deleteBtn, GroupLayout.DEFAULT_SIZE, 287, Short.MAX_VALUE))
         			.addContainerGap())
@@ -202,19 +268,17 @@ public class ReservationsGUI extends javax.swing.JFrame {
         			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
         				.addComponent(jLabel4)
         				.addComponent(tfRoomId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        			.addPreferredGap(ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
+        			.addPreferredGap(ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
         			.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
         				.addComponent(jLabel5)
         				.addComponent(tfArrivalDate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        			.addPreferredGap(ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+        			.addPreferredGap(ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
         			.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
-        				.addComponent(tfDepertureDate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(tfRentDate, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
         				.addComponent(jLabel6))
-        			.addGap(39)
-        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
-        				.addComponent(jLabel7)
-        				.addComponent(tfAmount, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-        			.addGap(87)
+        			.addGap(37)
+        			.addComponent(lblError, GroupLayout.PREFERRED_SIZE, 22, GroupLayout.PREFERRED_SIZE)
+        			.addGap(86)
         			.addComponent(addBtn)
         			.addGap(18)
         			.addComponent(editBtn, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
@@ -249,7 +313,7 @@ public class ReservationsGUI extends javax.swing.JFrame {
         jLabel9.setBackground(new java.awt.Color(192, 192, 192));
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setText("QUẢN LÝ ĐẶT PHÒNG");
+        jLabel9.setText("RESERVATION MANAGEMENT");
         jLabel9.setOpaque(true);
         
         panel = new JPanel();
@@ -259,7 +323,7 @@ public class ReservationsGUI extends javax.swing.JFrame {
         panel_1.setBackground(Color.LIGHT_GRAY);
         panel_1.setLayout(null);
         
-        lblDanhSchPhng = new JLabel("Danh Sách Phòng");
+        lblDanhSchPhng = new JLabel("Payment");
         lblDanhSchPhng.setBounds(528, 5, 120, 20);
         lblDanhSchPhng.setFont(new Font("Segoe UI", Font.BOLD, 14));
         panel_1.add(lblDanhSchPhng);
@@ -268,7 +332,7 @@ public class ReservationsGUI extends javax.swing.JFrame {
         panel_2.setLayout(null);
         panel_2.setBackground(Color.LIGHT_GRAY);
         
-        lblThanhTon = new JLabel("Thanh Toán");
+        lblThanhTon = new JLabel("Room");
         lblThanhTon.setFont(new Font("Segoe UI", Font.BOLD, 14));
         lblThanhTon.setBounds(528, 5, 120, 20);
         panel_2.add(lblThanhTon);
@@ -277,10 +341,10 @@ public class ReservationsGUI extends javax.swing.JFrame {
         scrollPane_1.setBounds(10, 35, 1101, 167);
         panel_2.add(scrollPane_1);
         
-        table_1 = new JTable();
-        table_1.setBackground(Color.LIGHT_GRAY);
-        table_1.setBorder(new LineBorder(new Color(0, 0, 0)));
-        scrollPane_1.setViewportView(table_1);
+        roomTable = new JTable();
+        roomTable.setBackground(Color.LIGHT_GRAY);
+        roomTable.setBorder(new LineBorder(new Color(0, 0, 0)));
+        scrollPane_1.setViewportView(roomTable);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         layout.setHorizontalGroup(
@@ -324,22 +388,22 @@ public class ReservationsGUI extends javax.swing.JFrame {
         scrollPane.setBounds(10, 35, 1101, 167);
         panel_1.add(scrollPane);
         
-        table = new JTable();
-        table.setBorder(new LineBorder(new Color(0, 0, 0)));
-        table.setBackground(Color.LIGHT_GRAY);
-        scrollPane.setViewportView(table);
+        paymentTable = new JTable();
+        paymentTable.setBorder(new LineBorder(new Color(0, 0, 0)));
+        paymentTable.setBackground(Color.LIGHT_GRAY);
+        scrollPane.setViewportView(paymentTable);
         panel.setLayout(null);
         jScrollPane1 = new javax.swing.JScrollPane();
         jScrollPane1.setViewportBorder(null);
         jScrollPane1.setBounds(10, 38, 1101, 164);
         panel.add(jScrollPane1);
-        jTable1 = new javax.swing.JTable();
+        reservationTable = new javax.swing.JTable();
 
-        jTable1.setBackground(new java.awt.Color(192, 192, 192));
-        jTable1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jScrollPane1.setViewportView(jTable1);
+        reservationTable.setBackground(new java.awt.Color(192, 192, 192));
+        reservationTable.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jScrollPane1.setViewportView(reservationTable);
         
-        lblNewLabel = new JLabel("Danh Sách Đặt Phòng");
+        lblNewLabel = new JLabel("Reservation");
         lblNewLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         lblNewLabel.setBounds(516, 8, 148, 20);
         panel.add(lblNewLabel);
@@ -379,11 +443,11 @@ public class ReservationsGUI extends javax.swing.JFrame {
 		dtm.addColumn("reservationId");
 		dtm.addColumn("paymentId");
 		dtm.addColumn("roomId");
-		dtm.addColumn("ArrivalDate");
-		dtm.addColumn("DepartureDate");
+		dtm.addColumn("arrival date");
+		dtm.addColumn("rent date");
 		dtm.addColumn("amount");
 		
-		jTable1.setModel(dtm);
+		reservationTable.setModel(dtm);
 		
 		ArrayList<ReservationsDTO> arr = new ArrayList<ReservationsDTO>();
 		arr = reservationBUS.getAllReservationss();
@@ -395,10 +459,10 @@ public class ReservationsGUI extends javax.swing.JFrame {
 			int paymentId = em.getPaymentId();
 			int roomId = em.getRoomId();
 			String arrivalDate = em.getArrivalDate();
-			String departureDate = em.getDepartureDate();
+			int rentDate = em.getRentDate();
 			int	amount = em.getAmount();
 			
-			Object[] row = {reservationId, paymentId, roomId, arrivalDate, departureDate, amount};
+			Object[] row = {reservationId, paymentId, roomId, arrivalDate, rentDate, amount};
 			
 			dtm.addRow(row);
 		}
@@ -409,11 +473,11 @@ public class ReservationsGUI extends javax.swing.JFrame {
 		dtm.addColumn("paymentId");
 		dtm.addColumn("cutomerId");
 		dtm.addColumn("staffId");
-		dtm.addColumn("total");
 		dtm.addColumn("create date");
 		dtm.addColumn("payment date");
+		dtm.addColumn("total");
 		dtm.addColumn("status");
-		table_1.setModel(dtm);
+		paymentTable.setModel(dtm);
 		
 		ArrayList<PaymentDTO> arr = new ArrayList<PaymentDTO>();
 		arr = paymentBUS.getAllPayments();
@@ -428,9 +492,9 @@ public class ReservationsGUI extends javax.swing.JFrame {
 			String createDate = em.getCreateDate();
 			String paymentDate = em.getPaymentDate();
 			int total = em.getTotal();
-			int status = (em.getStatus() ? 1 : 0);
+			String status = (em.getStatus() ? "paid" : "unpaid");
 			
-			Object[] row = { paymentId, customerId, staffId, createDate, paymentDate, total, status};
+			Object[] row = {paymentId, customerId, staffId, createDate, paymentDate, total, status};
 			
 			dtm.addRow(row);
 		}
@@ -444,7 +508,7 @@ public class ReservationsGUI extends javax.swing.JFrame {
 		dtm.addColumn("Price");
 		dtm.addColumn("Status");
 		
-		table_1.setModel(dtm);
+		roomTable.setModel(dtm);
 		
 		ArrayList<RoomDTO> arr = new ArrayList<RoomDTO>();
 		arr = roomBUS.getAllRooms();
@@ -456,7 +520,7 @@ public class ReservationsGUI extends javax.swing.JFrame {
 			String size = em.getSize();
 			String type = em.getType();
 			int price = em.getPrice();
-			String status = em.getStatus() ? "Đầy" : "Trống";
+			String status = em.getStatus() ? "full" : "empty";
 			
 			Object[] row = {id, size, type, price, status};
 			

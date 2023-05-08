@@ -33,7 +33,7 @@ public class ReservationBUS {
 		if (!room.checkRoomStatus(roomId))
 			return "Phòng không trống";
 		
-		if (reservations.checkIfDateIsValid(Reservations.getArrivalDate()) || reservations.checkIfDateIsValid(Reservations.getDepartureDate()))
+		if (!reservations.checkIfDateIsValid(Reservations.getArrivalDate()))
 			return "Ngày không hợp lệ (MM/dd/yyyy)";
 		
 		if (reservations.addReservations(Reservations))
@@ -52,10 +52,10 @@ public class ReservationBUS {
 		if (!room.hasRoomId((roomId)))
 			return "Mã Phòng không tồn tại";
 		
-		if (!room.checkRoomStatus(roomId))
+		if (!reservations.checkRoomStatus(Reservations.getReservationId(), roomId))
 			return "Phòng không trống";
 		
-		if (reservations.checkIfDateIsValid(Reservations.getArrivalDate()) || reservations.checkIfDateIsValid(Reservations.getDepartureDate()))
+		if (!reservations.checkIfDateIsValid(Reservations.getArrivalDate()))
 			return "Ngày không hợp lệ (MM/dd/yyyy)";
 		
 		if (reservations.editReservations(Reservations))
