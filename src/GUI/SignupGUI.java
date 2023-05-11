@@ -202,10 +202,9 @@ public class SignupGUI extends JFrame {
 						StaffDTO em = new StaffDTO();
 						em.setId(Integer.parseInt(tfID.getText().trim()));
 						em.setFullname(tfFullname.getText().trim());
-						em.setPhone(Integer.parseInt(tfPhone.getText().trim()));
-                                                String selectedValue = comboBox.getSelectedItem().toString();
-                                                int gender = selectedValue.equals("Nam") ? 0 : 1;
-						em.setGender(gender);
+						em.setPhone(tfPhone.getText().trim());
+                        String selectedValue = comboBox.getSelectedItem().toString();
+						em.setGender(selectedValue.equals("Nam") ? 0 : 1);
 						em.setBirthday(tfBirthday.getText().trim());
 						em.setSalary(0);
 						em.setPassword(tfPassword.getText().trim());

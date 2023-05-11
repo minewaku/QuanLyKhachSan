@@ -49,10 +49,10 @@ public class PaymentDAO {
 				ResultSet rs = stmt.executeQuery(sql);
 				while(rs.next()){
 					PaymentDTO em = new PaymentDTO();
+					
 					em.setPaymentId(rs.getInt("paymentId"));
 					em.setCustomerId(rs.getInt("customerId"));
 					em.setStaffId(rs.getInt("staffId"));
-					calTotal(rs.getInt("paymentId"));
 					em.setCreateDate(rs.getString("createDate"));
 					em.setPaymentDate(rs.getString("paymentDate")); 
 					em.setTotal(rs.getInt("total"));
@@ -75,7 +75,6 @@ public class PaymentDAO {
 		if (openConnection()) {
 			try {
 				String sql = "Insert into Payment(paymentId, customerId, staffId, status) values(?, ?, ?, ?)"; 
-//				String sql = "SELECT Customer.customerId FROM Customer INNER JOIN Payment ON Customer.customerId = Payment;"
 				PreparedStatement stmt = con.prepareStatement(sql);
 				PaymentDTO em = new PaymentDTO();
 				stmt.setInt(1, payment.getPaymentId());
@@ -141,7 +140,6 @@ public class PaymentDAO {
 		
 		return result;
 	}
-	
 
 	public boolean hasPaymentId(int id){
 		boolean result = false;
@@ -179,37 +177,38 @@ public class PaymentDAO {
 
 	}
 
-	public void calTotal(int id) {
+	public boolean calTotal(int id) {
 		
+		boolean result = false; 
 		if(openConnection()) {
 			try {
 				int total = 0;
-				
+
 				String sql_calTotal_1 = "Select * from Reservations where paymentId = " + id + ";";		
 				Statement stmt_1 = con.createStatement();
-				
-				String sql_calTotal_2 = "SELECT s.* FROM Service s INNER JOIN Orders o ON s.serviceId = o.serviceId INNER JOIN Reservations res ON o.reservationId = res.reservationId WHERE res.paymentId = " + id + ";";
-				Statement stmt_2 = con.createStatement();
-				
-				ResultSet rs_1 = stmt_1.executeQuery(sql_calTotal_1);
-				while(rs_1.next())
+				ResultSet rs_1 = stmt_1.executeQuery(sql_calTotal_1);		
+				while(rs_1.next()) 
 					total = total + rs_1.getInt("amount");
 				
+				String sql_calTotal_2 = "Select * from Orders o INNER JOIN Reservations r ON o.reservationId = r.reservationId WHERE r.paymentId = " + id + ";";
+				Statement stmt_2 = con.createStatement();
 				ResultSet rs_2 = stmt_2.executeQuery(sql_calTotal_2);
-				while(rs_2.next())
+				while(rs_2.next()) {
+					System.out.println("amount from orders: " + rs_2.getInt("amount"));
 					total = total + rs_2.getInt("amount");
-				
-				String sql_updateTotal =  "Update Payment set total = ? where paymentId = " + id +";"; 
+				}
+
+				String sql_updateTotal = "Update Payment set total = ? where paymentId = " + id +";"; 
 				PreparedStatement stmt_3 = con.prepareStatement(sql_updateTotal);
 				stmt_3.setInt(1, total);
-				
-				if (stmt_3.executeUpdate()>=1)
-					return;
+				if (stmt_3.executeUpdate() >= 1)
+					result = true;
 				
 			} catch (SQLException ex) {
 				System.out.println(ex);
 			} finally { closeConnection(); } 
 		}
+		return result;
 	}
 	
 }

@@ -21,8 +21,8 @@ public class OrdersBUS {
 
 	public String addOrders(OrdersDTO Orders) {
 		
-		if (!orders.hasOrderId(Orders.getReservationId(), Orders.getServiceId()))
-			return "Mã Đặt Phòng hoặc Dịch Vụ không tồn tại";
+		if (orders.hasOrderId(Orders.getOrderId()))
+			return "Mã Đặt Dịch Vụ đã tồn tại";
 		
 		if (!reservations.hasReservationId(Orders.getReservationId()))
 			return "Mã Đặt Phòng không tồn tại";
@@ -36,15 +36,15 @@ public class OrdersBUS {
 		return "Thêm thất bại";	
 	}
 	
-	public String editOrders(OrdersDTO Orders, int reservationId, int serviceId) {
+	public String editOrders(OrdersDTO Orders) {
 		
-		if (!orders.hasOrderId(Orders.getReservationId(), Orders.getServiceId()))
-			return "Mã Đặt Phòng hoặc Dịch Vụ không tồn tại";
+		if (!orders.hasOrderId(Orders.getOrderId()))
+			return "Mã Đặt Dịch Vụ không tồn tại";
 		
 		if (!reservations.hasReservationId(Orders.getReservationId()))
 			return "Mã Đặt Phòng không tồn tại";
 		
-		if (!service.hasServiceID((serviceId)))
+		if (!service.hasServiceID(Orders.getServiceId()))
 			return "Mã Dịch Vụ không tồn tại";
 		
 		if (orders.editOrders(Orders))
@@ -54,8 +54,9 @@ public class OrdersBUS {
 	}
 	
 	public String deleteOrders(OrdersDTO Orders) {
-		if (!orders.hasOrderId(Orders.getReservationId(), Orders.getServiceId()))
-			return "Mã Đặt Phòng hoặc Dịch Vụ không tồn tại";
+		
+		if (!orders.hasOrderId(Orders.getOrderId()))
+			return "Mã Đặt Dịch Vụ không tồn tại";
 		
 		if (orders.deleteOrders(Orders))
 			return "Xóa thành công";

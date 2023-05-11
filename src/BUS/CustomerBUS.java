@@ -15,10 +15,10 @@ public class CustomerBUS {
 		if (cus.hasCustomerID(Customer.getId()))
 			return "Mã Khách Hàng đã tồn tại";
 		
-		if (cus.hasPhone(Customer.getPhone(), Customer.getId()))
+		if (cus.hasPhoneForAdd(Customer.getPhone()))
 			return "Số điện thoại đã tồn tại";
 		
-		if (cus.checkValidPhone(Customer.getPhone()))
+		if (!cus.checkValidPhone(Customer.getPhone()))
 			return "Số điện thoại không hợp lệ";
 		
 		if (!cus.checkIfDateIsValid(Customer.getBirthday()))
@@ -34,10 +34,10 @@ public class CustomerBUS {
 		if (!cus.hasCustomerID(Customer.getId()))
 			return "Mã Khách Hàng không tồn tại";
 		
-		if (cus.hasPhone(Customer.getPhone(), Customer.getId()))
+		if (cus.hasPhoneForEdit(Customer.getPhone(), Customer.getId()))
 			return "Số điện thoại đã tồn tại";
 		
-		if (cus.checkValidPhone(Customer.getPhone()))
+		if (!cus.checkValidPhone(Customer.getPhone()))
 			return "Số điện thoại không hợp lệ";
 		
 		if (!cus.checkIfDateIsValid(Customer.getBirthday()))

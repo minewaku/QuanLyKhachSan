@@ -73,7 +73,7 @@ public class ServiceDAO {
 				stmt.setString(2, service.getName());
 				stmt.setInt(3, service.getPrice());
 				
-				if (stmt.executeUpdate()>=1)
+				if (stmt.executeUpdate() >= 1)
 					result = true;
 
 			} catch (SQLException ex) {
@@ -91,16 +91,12 @@ public class ServiceDAO {
 		boolean result = false;
 		if (openConnection()) {
 			try { 
-				String sql = "update Service set ";
-				Statement stmt = con.createStatement();
+				String sql = "update Service set name = ?, price = ? where serviceId = ?";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setString(1, service.getName());
+				stmt.setInt(2, service.getServiceId());
 				
-				sql = sql + "serviceId = " + service.getServiceId() + ", ";
-				sql = sql + "name = " + "'" + service.getName() + "'"  + ", ";
-				sql = sql + "price = " + service.getPrice() + " ";
-				
-				sql = sql + "where serviceId = " + service.getServiceId() + ";";
-				
-				if (stmt.executeUpdate(sql)>=1)
+				if (stmt.executeUpdate() >= 1)
 					result = true;
 
 			} catch (SQLException ex) {
@@ -119,7 +115,7 @@ public class ServiceDAO {
 			try {
 				String sql = "delete from Service where serviceId = " + service.getServiceId();
 				PreparedStatement stmt = con.prepareStatement(sql);
-				if (stmt.executeUpdate()>=1)
+				if (stmt.executeUpdate() >= 1)
 					result = true;
 
 			} catch (SQLException ex) {
@@ -132,24 +128,24 @@ public class ServiceDAO {
 		return result;
 	}
 	
-        public boolean searchCustomer(ServiceDTO service) {
-                boolean result = false;
-                if (openConnection()) {
-                    try {
-                    String sql = "SELECT * FROM Customer WHERE customerId = " + service.getServiceId();
-                    Statement stmt = con.createStatement();
-                    ResultSet rs = stmt.executeQuery(sql);
-                    result = rs.next();
+    public boolean searchCustomer(ServiceDTO service) {
+            boolean result = false;
+            if (openConnection()) {
+                try {
+                String sql = "SELECT * FROM Customer WHERE customerId = " + service.getServiceId();
+                Statement stmt = con.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                result = rs.next();
 
-                    } catch (SQLException ex) {
-				System.out.println(ex);
-                    } finally{
-				closeConnection();
-                    } 
-                }
-                return result;
-        }
-        
+                } catch (SQLException ex) {
+			System.out.println(ex);
+                } finally{
+			closeConnection();
+                } 
+            }
+            return result;
+    }
+    
 
 	public boolean hasServiceID(int id){
 		boolean result = false;

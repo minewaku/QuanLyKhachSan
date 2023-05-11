@@ -52,7 +52,7 @@ public class StaffDAO {
 					
 					em.setId(rs.getInt("staffId"));
 					em.setFullname(rs.getString("fullname"));
-					em.setPhone(rs.getInt("phone"));
+					em.setPhone(rs.getString("phone"));
 					em.setGender(rs.getInt("gender"));
 					em.setBirthday(rs.getString("birthday"));
 					em.setSalary(rs.getInt("salary"));
@@ -78,18 +78,17 @@ public class StaffDAO {
 				PreparedStatement stmt = con.prepareStatement(sql);
 				stmt.setInt(1, staff.getId());
 				stmt.setString(2, staff.getFullname());
-				stmt.setInt(3, staff.getPhone());
+				stmt.setString(3, staff.getPhone());
 				stmt.setInt(4, staff.getGender());
 				stmt.setString(5, staff.getBirthday());
 				stmt.setInt(6, staff.getSalary());
 				stmt.setString(7, staff.getPassword());
 				
-				if (stmt.executeUpdate()>=1)
+				if (stmt.executeUpdate() >= 1)
 					result = true;
 
 			} catch (SQLException ex) {
 				System.out.println(ex);
-				System.out.println("error 1");
 			} finally{
 				closeConnection();
 			} 
@@ -102,20 +101,17 @@ public class StaffDAO {
 		boolean result = false;
 		if (openConnection()) {
 			try { 
-				String sql = "update Staff set ";
-				Statement stmt = con.createStatement();
+				String sql = "update Staff set fullname = ?, phone = ?, gender = ?, birthday = ?, salary = ?, password = ? where staffId = ?";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setString(1, staff.getFullname());
+				stmt.setString(2, staff.getPhone());
+				stmt.setInt(3, staff.getGender());
+				stmt.setString(4, staff.getBirthday());
+				stmt.setInt(5, staff.getSalary());
+				stmt.setString(6, staff.getPassword());
+				stmt.setInt(7, staff.getId());
 				
-				sql = sql + "staffId = " + staff.getId() + ", ";
-				sql = sql + "fullname = " + "'" + staff.getFullname() + "'" + ", ";
-				sql = sql + "phone = " + staff.getPhone() + ", ";
-				sql = sql + "gender = " + staff.getGender() + ", ";
-				sql = sql + "birthday = " + "'" + staff.getBirthday() + "'" + ", ";
-				sql = sql + "salary = " + staff.getSalary() + ", ";
-				sql = sql + "password = " + "'" + staff.getPassword() + "'" + " ";
-				
-				sql = sql + "where staffId = " + staff.getId() + ";";
-				
-				if (stmt.executeUpdate(sql)>=1)
+				if (stmt.executeUpdate() >= 1)
 					result = true;
 
 			} catch (SQLException ex) {
@@ -134,7 +130,8 @@ public class StaffDAO {
 			try {
 				String sql = "delete from Staff where staffId = " + staff.getId();
 				PreparedStatement stmt = con.prepareStatement(sql);
-				if (stmt.executeUpdate()>=1)
+				
+				if (stmt.executeUpdate() >= 1)
 					result = true;
 
 			} catch (SQLException ex) {
@@ -148,21 +145,21 @@ public class StaffDAO {
 	}
         
         public boolean searchCustomer(StaffDTO staff) {
-                boolean result = false;
-                if (openConnection()) {
-                    try {
-                    String sql = "SELECT * FROM Customer WHERE customerId = " + staff.getId();
-                    Statement stmt = con.createStatement();
-                    ResultSet rs = stmt.executeQuery(sql);
-                    result = rs.next();
+            boolean result = false;
+            if (openConnection()) {
+                try {
+                String sql = "SELECT * FROM Customer WHERE customerId = " + staff.getId();
+                Statement stmt = con.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                result = rs.next();
 
-                    } catch (SQLException ex) {
-				System.out.println(ex);
-                    } finally{
-				closeConnection();
-                    } 
-                }
-                return result;
+                } catch (SQLException ex) {
+			System.out.println(ex);
+                } finally{
+			closeConnection();
+                } 
+            }
+            return result;
         }
 	
 
@@ -175,13 +172,14 @@ public class StaffDAO {
 				Statement stmt = con.createStatement();
 				ResultSet rs = stmt.executeQuery(sql);
 				result = rs.next();
+				
 			} catch (SQLException ex) {
 				System.out.println(ex);
 			} finally { closeConnection(); } }
 		return result;
 	}
 	
-	public boolean hasPhoneForAdd(int phone) {
+	public boolean hasPhoneForAdd(String phone) {
 		boolean result = false;
 		
 		if (openConnection()) {
@@ -190,6 +188,7 @@ public class StaffDAO {
 				Statement stmt = con.createStatement();
 				ResultSet rs = stmt.executeQuery(sql);
 				result = rs.next();
+				
 			} catch (SQLException ex) {
 				System.out.println(ex);
 			} finally { closeConnection(); } }
@@ -197,7 +196,7 @@ public class StaffDAO {
 		return result;
 	}
 	
-	public boolean hasPhoneForEdit(int phone, int id) {
+	public boolean hasPhoneForEdit(String phone, int id) {
 		boolean result = false;
 		
 		if (openConnection()) {
@@ -213,9 +212,9 @@ public class StaffDAO {
 		return result;
 	}
 	
-	public boolean checkValidPhone(int phone) {
+	public boolean checkValidPhone(String phone) {
 		boolean result = false;
-		if(Integer.toString(phone).chars().count() == 10 && Integer.toString(phone).charAt(0) == '0')
+		if(phone.length() == 10 && phone.charAt(0) == '0')
 			result = true;
 			
 		return result;
@@ -260,7 +259,7 @@ public class StaffDAO {
 				
 				user.setId(rs.getInt("staffId"));
 				user.setFullname(rs.getString("fullname"));
-				user.setPhone(rs.getInt("phone"));
+				user.setPhone(rs.getString("phone"));
 				user.setGender(rs.getInt("gender"));
 				user.setBirthday(rs.getString("birthday"));
 				user.setSalary(rs.getInt("salary"));
@@ -268,9 +267,6 @@ public class StaffDAO {
 					
 			} catch (SQLException ex) {
 				System.out.println(ex);
-				System.out.println("kotori");
-				System.out.println(id + " " + password);
-				System.out.println(user.getId() + " " + user.getFullname() + " " + user.getPassword());
 			} finally {
 				closeConnection();
 			} 

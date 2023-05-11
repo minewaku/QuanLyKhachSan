@@ -27,7 +27,7 @@ public class StaffDTO extends Person{
 	public StaffDTO() {
 		
 	}
-	public StaffDTO(int staffId, String fullname, int phone, int gender, String birthday, int salary, String password) {
+	public StaffDTO(int staffId, String fullname, String phone, int gender, String birthday, int salary, String password) {
 		super(staffId, fullname, phone, gender, birthday);
 		this.salary = salary;
 		this.password = password;

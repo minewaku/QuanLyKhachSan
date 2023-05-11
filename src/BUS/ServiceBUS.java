@@ -48,7 +48,7 @@ public class ServiceBUS {
 		return "Xóa thất bại";
 	}
         
-        public String searchService(ServiceDTO Service) {
+    public String searchService(ServiceDTO Service) {
 		if (!service.hasServiceID(Service.getServiceId()))
 			return "Mã Dịch Vụ không tồn tại";
 		

@@ -17,6 +17,7 @@ import GUI.LoginGUI;
 public class OrdersDAO {
 	private Connection con;
 	
+	PaymentDAO payment = new PaymentDAO();
 	LoginGUI loginGUI = new LoginGUI();
 	
 	public boolean openConnection() {
@@ -50,8 +51,10 @@ public class OrdersDAO {
 				String sql = "Select * from Orders";
 				Statement stmt = con.createStatement();
 				ResultSet rs = stmt.executeQuery(sql);
+				
 				while(rs.next()){
 					OrdersDTO em = new OrdersDTO();
+					em.setOrderId(rs.getInt("orderId"));
 					em.setReservationId(rs.getInt("reservationId"));
 					em.setServiceId(rs.getInt("serviceId"));
 					em.setStaffId(rs.getInt("staffId"));
@@ -75,17 +78,20 @@ public class OrdersDAO {
 		boolean result = false;
 		if (openConnection()) {
 			try {
-				String sql = "Insert into Orders(reservationId, serviceId, staffId, quantity, date, amount) values(?, ?, ?, ?, ?, ?)"; 
+				String sql = "Insert into Orders(orderId , reservationId, serviceId, staffId, quantity, amount) values(?, ?, ?, ?, ?, ?)"; 
 				PreparedStatement stmt = con.prepareStatement(sql);
 				OrdersDTO em = new OrdersDTO();
-				stmt.setInt(1, order.getReservationId());
-				stmt.setInt(2, order.getServiceId());
-				stmt.setInt(3, loginGUI.loginUser.getId());
-				stmt.setInt(4, order.getQuantity());
-				stmt.setInt(5, calAmount(order));
+				stmt.setInt(1, order.getOrderId());
+				stmt.setInt(2, order.getReservationId());
+				stmt.setInt(3, order.getServiceId());
+				stmt.setInt(4, loginGUI.loginUser.getId());
+				stmt.setInt(5, order.getQuantity());
+				stmt.setInt(6, calAmount(order));
 				
-				if (stmt.executeUpdate()>=1)
+				if (stmt.executeUpdate() >= 1) {
 					result = true;
+					updatePayment(order);
+				}
 
 			} catch (SQLException ex) {
 				System.out.println(ex);
@@ -102,18 +108,19 @@ public class OrdersDAO {
 		
 		if (openConnection()) {
 			try { 
-				String sql = "update Orders set ";
-				Statement stmt = con.createStatement();
+				String sql = "update Orders set reservationId = ?, serviceId = ?, staffId = ?, quantity = ?, amount = ? where orderId = ?";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setInt(1, order.getReservationId());
+				stmt.setInt(2, order.getServiceId());
+				stmt.setInt(3, loginGUI.loginUser.getId());
+				stmt.setInt(4, order.getQuantity());
+				stmt.setInt(5, calAmount(order));
+				stmt.setInt(6, order.getOrderId());
 				
-				sql = sql + "reservationId = " + "'" + order.getReservationId() + "'" + ", ";
-				sql = sql + "serviceId = " + "'" + order.getServiceId() + "'" + ", ";
-				sql = sql + "quantity = " + order.getQuantity() + ", ";
-				sql = sql + "amount = " + "'" + calAmount(order) + "'" + ", ";
-				
-				sql = sql + "where reservationId = " + order.getReservationId() + " and " + "serviceId = " + order.getServiceId() + ";" ;
-				
-				if (stmt.executeUpdate(sql)>=1)
+				if (stmt.executeUpdate() >= 1) {
 					result = true;
+					updatePayment(order);
+				}
 
 			} catch (SQLException ex) {
 				System.out.println(ex);
@@ -129,10 +136,13 @@ public class OrdersDAO {
 		boolean result = false;
 		if (openConnection()) {
 			try {
-				String sql = "delete from Orders where reservationtId = " + order.getReservationId() + " and " + "serviceId = " + order.getServiceId() + ";" ;
-				PreparedStatement stmt = con.prepareStatement(sql);
-				if (stmt.executeUpdate()>=1)
+				String sql = "delete from Orders where orderId = " + order.getOrderId();
+				Statement stmt = con.createStatement();
+				
+				if (stmt.executeUpdate(sql) >= 1) {
 					result = true;
+					updatePayment(order);
+				}
 
 			} catch (SQLException ex) {
 				System.out.println(ex);
@@ -144,15 +154,16 @@ public class OrdersDAO {
 		return result;
 	}
 	
-	public boolean hasOrderId(int reservationId, int serviceId){
+	public boolean hasOrderId(int orderId){
 		boolean result = false;
 		
 		if (openConnection()) {
 			try {
-				String sql = "Select * from Orders where reservationId = " + reservationId + " and " + "serviceId = " + serviceId + ";" ;
+				String sql = "Select * from Orders where orderId = " + orderId;
 				Statement stmt = con.createStatement();
 				ResultSet rs = stmt.executeQuery(sql);
 				result = rs.next();
+				
 			} catch (SQLException ex) {
 				System.out.println(ex);
 			} finally { closeConnection(); } }
@@ -181,5 +192,22 @@ public class OrdersDAO {
 			finally { closeConnection(); } 
 		}
 		return amount;
+	}
+	
+	private void updatePayment(OrdersDTO order) {
+		if (openConnection()) {
+			try {
+				String url = "Select * from Reservations as r inner join Orders as o on r.reservationId = o.reservationId where orderId = " + order.getOrderId();
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(url);
+				rs.next();
+				int paymentId = rs.getInt("paymentId");
+				payment.calTotal(paymentId);
+			}
+			catch (Exception ex) {
+				System.out.println(ex);
+			} 
+			finally { closeConnection(); } 
+		}
 	}
 }

@@ -311,31 +311,12 @@ public class PaymentGUI extends javax.swing.JFrame {
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
         );
 
-    }// </editor-fold>//GEN-END:initComponents
-
-    private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
-        
-    }//GEN-LAST:event_editBtnActionPerformed
-
-    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
-        
-    }//GEN-LAST:event_addBtnActionPerformed
+    }
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
 
     }//GEN-LAST:event_tableMouseClicked
 
-    private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
-
-    }//GEN-LAST:event_exitBtnActionPerformed
-
-    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
-       
-    }//GEN-LAST:event_deleteBtnActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -421,7 +402,7 @@ public class PaymentGUI extends javax.swing.JFrame {
 			
 			int id = em.getId();
 			String fullname = em.getFullname();
-			int phone = em.getPhone();
+			String phone = em.getPhone();
 			String gender = "";
 			if (em.getGender() == 0)
 				gender = "male";

@@ -17,7 +17,7 @@ public class CustomerDTO extends Person{
 	public CustomerDTO() {
 		
 	}
-	public CustomerDTO(int customerId, String fullname, int phone, int gender, String birthday, String address) {
+	public CustomerDTO(int customerId, String fullname, String phone, int gender, String birthday, String address) {
 		super(customerId, fullname, phone, gender, birthday);
 		this.address = address;
 	}

@@ -1,25 +1,20 @@
 package GUI;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
-import javax.swing.JFrame;
 import javax.swing.GroupLayout.Alignment;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 import BUS.OrdersBUS;
@@ -29,6 +24,7 @@ import DTO.OrdersDTO;
 import DTO.PaymentDTO;
 import DTO.ReservationsDTO;
 import DTO.ServiceDTO;
+import javax.swing.JTextField;
 
 
 public class OrdersGUI extends javax.swing.JFrame {
@@ -64,9 +60,12 @@ public class OrdersGUI extends javax.swing.JFrame {
   
 	private Container titlePane;
 	private Container mainPane;
-	private JLabel lblError;
+	private JLabel lblError = new JLabel("");
+	private JTextField tfOrderId;
+    
 	public OrdersGUI() {
         initComponents();
+        loadStaffId();
         loadOrderList();
         loadReservationList();
         loadServiceList();
@@ -74,7 +73,6 @@ public class OrdersGUI extends javax.swing.JFrame {
     
     @SuppressWarnings("unchecked")
     private void initComponents() {
-
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
@@ -83,6 +81,7 @@ public class OrdersGUI extends javax.swing.JFrame {
         tfServiceId = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         tfStaffId = new javax.swing.JTextField();
+        tfStaffId.setEditable(false);
         jLabel5 = new javax.swing.JLabel();
         tfQuantity = new javax.swing.JTextField();
         editBtn = new javax.swing.JButton();
@@ -120,17 +119,20 @@ public class OrdersGUI extends javax.swing.JFrame {
         editBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (tfPaymentId.getText().trim().equals("") || tfCustomerId.getText().trim().equals(""))
+					if (tfOrderId.getText().trim().equals("") || tfReservationId.getText().trim().equals("") || tfServiceId.getText().trim().equals("") || tfQuantity.getText().trim().equals(""))
 						lblError.setText("Vui lòng nhập đủ thông tin");
 					
 					else {
-						PaymentDTO em = new PaymentDTO();
-						em.setPaymentId(Integer.parseInt(tfPaymentId.getText()));
-						em.setCustomerId(Integer.parseInt(tfCustomerId.getText()));
+						OrdersDTO em = new OrdersDTO();
+						em.setOrderId(Integer.parseInt(tfOrderId.getText().trim()));
+						em.setReservationId(Integer.parseInt(tfReservationId.getText().trim()));
+						em.setServiceId(Integer.parseInt(tfServiceId.getText().trim()));
+						em.setQuantity(Integer.parseInt(tfQuantity.getText().trim()));
 						
-						lblError.setText(paymentBUS.editPayment(em, em.getCustomerId()));
-						loadPaymentList();
-						loadCustomerList();
+						lblError.setText(orderBUS.editOrders(em));
+						loadOrderList();
+						loadReservationList();
+						loadServiceList();
 					}	
 				} catch (NumberFormatException ex) {
 					lblError.setText("Thông tin không hợp lệ");
@@ -143,17 +145,20 @@ public class OrdersGUI extends javax.swing.JFrame {
         addBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (tfPaymentId.getText().trim().equals("") || tfCustomerId.getText().trim().equals(""))
+					if (tfOrderId.getText().trim().equals("") || tfReservationId.getText().trim().equals("") || tfServiceId.getText().trim().equals("") || tfQuantity.getText().trim().equals(""))
 						lblError.setText("Vui lòng nhập đủ thông tin");
 					
 					else {
-						PaymentDTO em = new PaymentDTO();
-						em.setPaymentId(Integer.parseInt(tfPaymentId.getText()));
-						em.setCustomerId(Integer.parseInt(tfCustomerId.getText()));
+						OrdersDTO em = new OrdersDTO();
+						em.setOrderId(Integer.parseInt(tfOrderId.getText().trim()));
+						em.setReservationId(Integer.parseInt(tfReservationId.getText()));
+						em.setServiceId(Integer.parseInt(tfServiceId.getText()));
+						em.setQuantity(Integer.parseInt(tfQuantity.getText().trim()));
 						
-						lblError.setText(paymentBUS.addPayment(em, em.getCustomerId()));
-						loadPaymentList();
-						loadCustomerList();
+						lblError.setText(orderBUS.addOrders(em));
+						loadOrderList();
+						loadReservationList();
+						loadServiceList();
 					}	
 				} catch (NumberFormatException ex) {
 					lblError.setText("Thông tin không hợp lệ");
@@ -166,15 +171,17 @@ public class OrdersGUI extends javax.swing.JFrame {
         deleteBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if (tfPaymentId.getText().trim().equals(""))
+					if (tfOrderId.getText().trim().equals(""))
 						lblError.setText("Vui lòng nhập đủ thông tin");
 					
 					else {
-						PaymentDTO em = new PaymentDTO();
-						em.setPaymentId(Integer.parseInt(tfPaymentId.getText().trim()));
+						OrdersDTO em = new OrdersDTO();
+						em.setOrderId(Integer.parseInt(tfOrderId.getText().trim()));
 						
-						lblError.setText(paymentBUS.deletePayment(em));
-						loadPaymentList();
+						lblError.setText(orderBUS.deleteOrders(em));
+						loadOrderList();
+						loadReservationList();
+						loadServiceList();
 					}	
 				} catch (NumberFormatException ex) {
 					lblError.setText("Xảy ra lỗi");
@@ -197,42 +204,52 @@ public class OrdersGUI extends javax.swing.JFrame {
 			}
 		});
         
-        lblError = new JLabel("");
-        lblError.setForeground(new Color(255, 0, 128));
+        JLabel lblOrderId = new JLabel("OrderId");
+        lblOrderId.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        
+        tfOrderId = new JTextField();
+        tfOrderId.setColumns(10);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2Layout.setHorizontalGroup(
-        	jPanel2Layout.createParallelGroup(Alignment.TRAILING)
+        	jPanel2Layout.createParallelGroup(Alignment.LEADING)
         		.addGroup(jPanel2Layout.createSequentialGroup()
         			.addGap(18)
         			.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        				.addComponent(addBtn, GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+        				.addComponent(editBtn, GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+        				.addComponent(deleteBtn, GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+        				.addComponent(exitBtn, GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
+        				.addComponent(lblError, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
         				.addGroup(jPanel2Layout.createSequentialGroup()
-        					.addComponent(jLabel5, GroupLayout.PREFERRED_SIZE, 102, GroupLayout.PREFERRED_SIZE)
-        					.addPreferredGap(ComponentPlacement.RELATED)
-        					.addComponent(tfQuantity, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
-        				.addComponent(addBtn, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
-        				.addComponent(editBtn, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
-        				.addComponent(deleteBtn, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
-        				.addComponent(exitBtn, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE)
-        				.addGroup(jPanel2Layout.createSequentialGroup()
-        					.addComponent(jLabel2)
-        					.addGap(7)
-        					.addComponent(tfReservationId, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE))
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        						.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING, false)
+        							.addComponent(jLabel4, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        							.addComponent(jLabel3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        						.addComponent(jLabel5, GroupLayout.PREFERRED_SIZE, 88, GroupLayout.PREFERRED_SIZE))
+        					.addGap(15)
+        					.addGroup(jPanel2Layout.createParallelGroup(Alignment.LEADING)
+        						.addComponent(tfQuantity, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
+        						.addComponent(tfStaffId, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
+        						.addComponent(tfServiceId, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)))
         				.addGroup(jPanel2Layout.createSequentialGroup()
         					.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING, false)
-        						.addComponent(jLabel4, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        						.addComponent(jLabel3, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        					.addGap(39)
+        						.addComponent(lblOrderId, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        						.addComponent(jLabel2, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        					.addGap(7)
         					.addGroup(jPanel2Layout.createParallelGroup(Alignment.TRAILING)
-        						.addComponent(tfStaffId, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
-        						.addComponent(tfServiceId, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)))
-        				.addComponent(lblError, Alignment.TRAILING, GroupLayout.DEFAULT_SIZE, 262, Short.MAX_VALUE))
+        						.addComponent(tfOrderId, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE)
+        						.addComponent(tfReservationId, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 162, Short.MAX_VALUE))))
         			.addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
         	jPanel2Layout.createParallelGroup(Alignment.LEADING)
         		.addGroup(jPanel2Layout.createSequentialGroup()
-        			.addGap(36)
+        			.addGap(17)
+        			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(lblOrderId)
+        				.addComponent(tfOrderId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+        			.addPreferredGap(ComponentPlacement.RELATED)
         			.addGroup(jPanel2Layout.createParallelGroup(Alignment.BASELINE)
         				.addComponent(jLabel2)
         				.addComponent(tfReservationId, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
@@ -258,8 +275,9 @@ public class OrdersGUI extends javax.swing.JFrame {
         			.addComponent(deleteBtn)
         			.addGap(18)
         			.addComponent(exitBtn)
-        			.addContainerGap(128, Short.MAX_VALUE))
+        			.addContainerGap(122, Short.MAX_VALUE))
         );
+        lblError.setForeground(new Color(255, 0, 128));
         jPanel2.setLayout(jPanel2Layout);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -282,7 +300,7 @@ public class OrdersGUI extends javax.swing.JFrame {
         jLabel9.setBackground(new java.awt.Color(192, 192, 192));
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel9.setText("ORDERS");
+        jLabel9.setText("ORDER MANAGEMENT");
         jLabel9.setOpaque(true);
         
         JPanel panel = new JPanel();
@@ -317,7 +335,7 @@ public class OrdersGUI extends javax.swing.JFrame {
         serviceTable.setBackground(Color.LIGHT_GRAY);
         jScrollPane1_2.setViewportView(serviceTable);
         
-        lblReservation_1 = new JLabel("SERVICES");
+        lblReservation_1 = new JLabel("SERVICE");
         lblReservation_1.setFont(new Font("Segoe UI", Font.BOLD, 13));
         lblReservation_1.setBounds(552, 6, 123, 13);
         panel_2.add(lblReservation_1);
@@ -419,6 +437,7 @@ public class OrdersGUI extends javax.swing.JFrame {
     
     public void loadOrderList() {
     	DefaultTableModel dtm = new DefaultTableModel();
+    	dtm.addColumn("orderId");
 		dtm.addColumn("reservationId");
 		dtm.addColumn("serviceId");
 		dtm.addColumn("staffId");
@@ -426,7 +445,7 @@ public class OrdersGUI extends javax.swing.JFrame {
 		dtm.addColumn("date");
 		dtm.addColumn("amount");
 		
-		reservationTable.setModel(dtm);
+		orderTable.setModel(dtm);
 		
 		ArrayList<OrdersDTO> arr = new ArrayList<OrdersDTO>();
 		arr = orderBUS.getAllOrders();
@@ -434,6 +453,7 @@ public class OrdersGUI extends javax.swing.JFrame {
 		for(int i = 0; i < arr.size(); i++){
 			OrdersDTO em = arr.get(i);
 			
+			int orderId = em.getOrderId();
 			int reservationId = em.getReservationId();
 			int serviceId = em.getServiceId();
 			int staffId = em.getStaffId();
@@ -441,7 +461,7 @@ public class OrdersGUI extends javax.swing.JFrame {
 			String date = em.getDate();
 			int amount = em.getAmount();
 			
-			Object[] row = {reservationId, serviceId, staffId, quantity, date, amount};
+			Object[] row = {orderId, reservationId, serviceId, staffId, quantity, date, amount};
 			
 			dtm.addRow(row);
 		}
@@ -483,7 +503,7 @@ public class OrdersGUI extends javax.swing.JFrame {
 		dtm.addColumn("Name");
 		dtm.addColumn("Price");
 		
-		reservationTable.setModel(dtm);
+		serviceTable.setModel(dtm);
 		
 		ArrayList<ServiceDTO> arr = new ArrayList<ServiceDTO>();
 		arr = serviceBUS.getAllServices();

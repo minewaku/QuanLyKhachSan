@@ -128,7 +128,7 @@ public class CustomerGUI extends javax.swing.JFrame {
 						CustomerDTO em = new CustomerDTO();
 						em.setId(Integer.parseInt(tfCustomerID.getText().trim()));
 						em.setFullname(tfFullname.getText());
-						em.setPhone(Integer.parseInt(tfPhone.getText()));
+						em.setPhone(tfPhone.getText().trim());
 						em.setGender(tfGender.getSelectedItem().toString().trim().equals("male") ? 0 : 1);
 						em.setBirthday(tfBirthday.getText().trim());
 						em.setAddress(tfAddress.getText().trim());
@@ -154,7 +154,7 @@ public class CustomerGUI extends javax.swing.JFrame {
 						CustomerDTO em = new CustomerDTO();
 						em.setId(Integer.parseInt(tfCustomerID.getText().trim()));
 						em.setFullname(tfFullname.getText().trim());
-						em.setPhone(Integer.parseInt(tfPhone.getText().trim()));
+						em.setPhone(tfPhone.getText().trim());
 						em.setGender(tfGender.getSelectedItem().toString().trim().equals("male") ? 0 : 1);
 						em.setBirthday(tfBirthday.getText().trim());
 						em.setAddress(tfAddress.getText().trim());
@@ -477,12 +477,8 @@ public class CustomerGUI extends javax.swing.JFrame {
 			
 			int id = em.getId();
 			String fullname = em.getFullname();
-			int phone = em.getPhone();
-			String gender = "";
-			if (em.getGender() == 0)
-				gender = "male";
-			else if (em.getGender() == 1)
-				gender = "female";
+			String phone = em.getPhone();
+			String gender = (em.getGender() == 0) ? "male" : "female";
 			String birthday = em.getBirthday();
 			String address = em.getAddress();
 			

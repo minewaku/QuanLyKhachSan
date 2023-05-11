@@ -2,6 +2,7 @@ package DTO;
 
 public class OrdersDTO {
 //	VARIABLES
+	private int orderId;
 	private int reservationId;
 	private int serviceId;
 	private int staffId;
@@ -10,6 +11,12 @@ public class OrdersDTO {
 	private int amount;
 	
 //	GETTER / SETTER
+	public int getOrderId() {
+		return orderId;
+	}
+	public void setOrderId(int orderId) {
+		this.orderId = orderId;
+	}
 	public int getReservationId() {
 		return reservationId;
 	}
@@ -53,8 +60,9 @@ public class OrdersDTO {
 		
 	}
 	
-	public OrdersDTO(int reservationId, int serviceId, int staffId, int quanity, String date, int amount) {
+	public OrdersDTO(int orderId, int reservationId, int serviceId, int staffId, int quanity, String date, int amount) {
 
+		this.orderId = orderId;
 		this.reservationId = reservationId;
 		this.serviceId = serviceId;
 		this.staffId = staffId;
@@ -63,6 +71,7 @@ public class OrdersDTO {
 		this.amount = amount;
 	}
 	public OrdersDTO(OrdersDTO x) {
+		this.orderId = x.orderId;
 		this.reservationId = x.reservationId;
 		this.serviceId = x.serviceId;
 		this.staffId = x.staffId;

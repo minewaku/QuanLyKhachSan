@@ -5,7 +5,7 @@ public class Person {
 //	VARIABLES
 	private int Id;
 	private String fullname;
-	private int phone;
+	private String phone;
 	private int gender;
 	private String birthday;
 	
@@ -22,10 +22,10 @@ public class Person {
 	public void setFullname(String fullname) {
 		this.fullname = fullname;
 	}
-	public int getPhone() {
+	public String getPhone() {
 		return phone;
 	}
-	public void setPhone(int phone) {
+	public void setPhone(String phone) {
 		this.phone = phone;
 	}
 	public int getGender() {
@@ -45,7 +45,7 @@ public class Person {
 	public Person() {
 		
 	}
-	public Person(int Id, String fullname, int phone, int gender, String birthday) {
+	public Person(int Id, String fullname, String phone, int gender, String birthday) {
 		this.Id = Id;
 		this.fullname = fullname;
 		this.phone = phone;

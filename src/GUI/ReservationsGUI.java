@@ -162,11 +162,11 @@ public class ReservationsGUI extends javax.swing.JFrame {
 					
 					else {
 						ReservationsDTO em = new ReservationsDTO();
-						em.setReservationId(Integer.parseInt(tfReservationId.getText()));
-						em.setPaymentId(Integer.parseInt(tfPaymentId.getText()));
-						em.setRoomId(Integer.parseInt(tfRoomId.getText()));
+						em.setReservationId(Integer.parseInt(tfReservationId.getText().trim()));
+						em.setPaymentId(Integer.parseInt(tfPaymentId.getText().trim()));
+						em.setRoomId(Integer.parseInt(tfRoomId.getText().trim()));
 						em.setArrivalDate(tfArrivalDate.getText().trim());
-						em.setRentDate(Integer.parseInt(tfRentDate.getText()));
+						em.setRentDate(Integer.parseInt(tfRentDate.getText().trim()));
 						
 						lblError.setText(reservationBUS.addReservations(em, em.getPaymentId(), em.getRoomId()));
 
@@ -181,7 +181,7 @@ public class ReservationsGUI extends javax.swing.JFrame {
 		});
 
         deleteBtn.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        deleteBtn.setText("delele");
+        deleteBtn.setText("delete");
         deleteBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -193,6 +193,7 @@ public class ReservationsGUI extends javax.swing.JFrame {
 						em.setReservationId(Integer.parseInt(tfReservationId.getText().trim()));
 						
 						lblError.setText(reservationBUS.deleteReservations(em));
+						
 						loadReservationList();
 						loadPaymentList();
 						loadRoomList();
@@ -484,7 +485,6 @@ public class ReservationsGUI extends javax.swing.JFrame {
 		
 		for(int i = 0; i < arr.size(); i++){
 			PaymentDTO em = arr.get(i);
-			
 			
 			int paymentId = em.getPaymentId();
 			int customerId = em.getCustomerId();

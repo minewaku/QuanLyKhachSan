@@ -19,10 +19,10 @@ public class StaffBUS {
 		if (staff.hasPhoneForAdd(Staff.getPhone()))
 			return "Số điện thoại đã tồn tại";
 		
-		if (staff.checkValidPhone(Staff.getPhone()))
+		if (!staff.checkValidPhone(Staff.getPhone()))
 			return "Số điện thoại không hợp lệ";
 		
-		if (staff.checkIfDateIsValid(Staff.getBirthday()))
+		if (!staff.checkIfDateIsValid(Staff.getBirthday()))
 			return "Ngày không hợp lệ (MM/dd/yyyy)";
 		
 		if (staff.addStaff(Staff))
@@ -38,7 +38,7 @@ public class StaffBUS {
 		if (staff.hasPhoneForEdit(Staff.getPhone(), Staff.getId()))
 			return "Số điện thoại đã tồn tại";
 		
-		if (staff.checkValidPhone(Staff.getPhone()))
+		if (!staff.checkValidPhone(Staff.getPhone()))
 			return "Số điện thoại không hợp lệ";
 		
 		if (!staff.checkIfDateIsValid(Staff.getBirthday()))

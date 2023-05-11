@@ -150,17 +150,14 @@ public class RoomDAO {
 		boolean result = false;
 		if (openConnection()) {
 			try { 
-				String sql = "update Room set ";
-				Statement stmt = con.createStatement();
+				String sql = "update Room set size = ?, type = ?, price = ? where roomId = ?;";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setString(1, room.getSize());
+				stmt.setString(2, room.getType());
+				stmt.setInt(3, room.getPrice());
+				stmt.setInt(4, room.getRoomId());
 				
-				sql = sql + "roomId = " + room.getRoomId() + ", ";
-				sql = sql + "size = " + "'" + room.getSize() + "'" + ", ";
-				sql = sql + "type = " + "'" + room.getType() + "'" + ", ";
-				sql = sql + "price = " + room.getPrice() + " ";
-				
-				sql = sql + "where roomId = " + room.getRoomId() + ";";
-				
-				if (stmt.executeUpdate(sql)>=1)
+				if (stmt.executeUpdate() >= 1)
 					result = true;
 
 			} catch (SQLException ex) {

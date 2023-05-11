@@ -51,7 +51,7 @@ public class CustomerDAO {
 					CustomerDTO em = new CustomerDTO();
 					em.setId(rs.getInt("customerId"));
 					em.setFullname(rs.getString("fullname"));
-					em.setPhone(rs.getInt("phone"));
+					em.setPhone(rs.getString("phone"));
 					em.setGender(rs.getInt("gender"));
 					em.setBirthday(rs.getString("birthday"));
 					em.setAddress(rs.getString("address")); 
@@ -76,7 +76,7 @@ public class CustomerDAO {
 				PreparedStatement stmt = con.prepareStatement(sql);
 				stmt.setInt(1, cus.getId());
 				stmt.setString(2, cus.getFullname());
-				stmt.setInt(3, cus.getPhone());
+				stmt.setString(3, cus.getPhone());
 				stmt.setInt(4, cus.getGender());
 				stmt.setString(5, cus.getBirthday());
 				stmt.setString(6, cus.getAddress());
@@ -98,19 +98,16 @@ public class CustomerDAO {
 		boolean result = false;
 		if (openConnection()) {
 			try { 
-				String sql = "update Customer set ";
-				Statement stmt = con.createStatement();
+				String sql = "update Customer set fullname = ?, phone = ?, gender = ?, birthday = ?, address = ? where customerId = ?;";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setString(1, cus.getFullname());
+				stmt.setString(2, cus.getPhone());
+				stmt.setInt(3, cus.getGender());
+				stmt.setString(4, cus.getBirthday());
+				stmt.setString(5, cus.getAddress());
+				stmt.setInt(6, cus.getId());
 				
-				sql = sql + "customerId = " + cus.getId() + ", ";
-				sql = sql + "fullname = " + "'" + cus.getFullname() + "'" + ", ";
-				sql = sql + "phone = " + cus.getPhone() + ", ";
-				sql = sql + "gender = " + cus.getGender() + ", ";
-				sql = sql + "birthday = " + "'" + cus.getBirthday() + "'" + ", ";
-				sql = sql + "address = " + "'" + cus.getAddress() + "'" + " ";
-				
-				sql = sql + "where customerId = " + cus.getId() + ";";
-				
-				if (stmt.executeUpdate(sql)>=1)
+				if (stmt.executeUpdate() >= 1)
 					result = true;
 
 			} catch (SQLException ex) {
@@ -176,15 +173,18 @@ public class CustomerDAO {
 		return result;
 	}
 	
-	public boolean hasPhone(int phone, int id) {
+	public boolean hasPhoneForAdd(String phone) {
 		boolean result = false;
 		
 		if (openConnection()) {
 			try {
-				String sql = "Select * from Customer where phone = " + phone + " and " + "customerId != " + id;
-				Statement stmt = con.createStatement();
-				ResultSet rs = stmt.executeQuery(sql);
+				String sql = "Select * from Customer where phone ?;";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setString(1, phone);
+				
+				ResultSet rs = stmt.executeQuery();
 				result = rs.next();
+				
 			} catch (SQLException ex) {
 				System.out.println(ex);
 			} finally { closeConnection(); } }
@@ -192,9 +192,30 @@ public class CustomerDAO {
 		return result;
 	}
 	
-	public boolean checkValidPhone(int phone) {
+	public boolean hasPhoneForEdit(String phone, int id) {
 		boolean result = false;
-		if(Integer.toString(phone).chars().count() == 10 && Integer.toString(phone).charAt(0) == '0')
+		
+		if (openConnection()) {
+			try {
+				String sql = "Select * from Customer where phone = ? and customerId != ?;";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setString(1, phone);
+				stmt.setInt(2, id);
+				
+				ResultSet rs = stmt.executeQuery();
+				result = rs.next();
+				
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally { closeConnection(); } }
+		
+		return result;
+	}
+	
+	public boolean checkValidPhone(String phone) {
+		boolean result = false;
+		
+		if(phone.length() == 10 && phone.charAt(0) == '0')
 			result = true;
 			
 		return result;
@@ -203,6 +224,7 @@ public class CustomerDAO {
 	 public boolean checkIfDateIsValid(String date) {
 	        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 	        format.setLenient(false);
+	        
 	        try {
 	            format.parse(date);
 	        } catch (ParseException e) {

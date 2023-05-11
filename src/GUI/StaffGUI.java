@@ -133,11 +133,12 @@ public class StaffGUI extends javax.swing.JFrame {
 						StaffDTO em = new StaffDTO();
 						em.setId(Integer.parseInt(tfStaffID.getText().trim()));
 						em.setFullname(tfFullname.getText().trim());
-						em.setPhone(Integer.parseInt(tfPhone.getText().trim()));
+						em.setPhone(tfPhone.getText().trim());
 						em.setGender(tfGender.getSelectedItem().toString().trim().equals("male") ? 0 : 1);
 						em.setBirthday(tfBirthday.getText().trim());
 						em.setSalary(Integer.parseInt(tfSalary.getText().trim()));
 						em.setPassword(tfPassword.getText().trim());
+						
 						lblError.setText(staffBUS.editStaff(em));
 						loadStaffList();
 					}	
@@ -159,7 +160,7 @@ public class StaffGUI extends javax.swing.JFrame {
 						StaffDTO em = new StaffDTO();
 						em.setId(Integer.parseInt(tfStaffID.getText().trim()));
 						em.setFullname(tfFullname.getText().trim());
-						em.setPhone(Integer.parseInt(tfPhone.getText().trim()));
+						em.setPhone(tfPhone.getText().trim());
 						em.setGender(tfGender.getSelectedItem().toString().trim().equals("male") ? 0 : 1);
 						em.setBirthday(tfBirthday.getText().trim());
 						em.setSalary(Integer.parseInt(tfSalary.getText().trim()));
@@ -520,7 +521,7 @@ public class StaffGUI extends javax.swing.JFrame {
 			
 			int id = em.getId();
 			String fullname = em.getFullname();
-			int phone = em.getPhone();
+			String phone = em.getPhone();
 			String gender = "";
 			if (em.getGender() == 0)
 				gender = "male";

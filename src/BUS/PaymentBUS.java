@@ -58,5 +58,11 @@ public class PaymentBUS {
 		return "Thanh toán thất bại";
 	}
 
+	public String calTotal(int id) {
+		if (payment.calTotal(id))
+			return "Cập nhập thanh toán thành công";
+		
+		return "Cập nhật thanh toán thất bại";
+	}
 	
 }
