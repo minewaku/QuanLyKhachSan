@@ -63,6 +63,37 @@ public class ServiceDAO {
 		return arr;
 	}
 	
+	public ArrayList<ServiceDTO> mostOrder(String day, String month, String year) {		 
+		 
+		ArrayList<ServiceDTO> arr = new ArrayList<ServiceDTO>();
+		
+		if (openConnection()) {
+			try {
+
+				String date = year + "-" + month + "-" + day;
+				 
+				String sql = "SELECT x.serviceId, x.name, sum(x.quantity) as total FROM (SELECT s.serviceId, s.name, o.quantity FROM Service as s INNER JOIN Orders as o ON s.serviceId = o.serviceId WHERE o.date >= ? AND o.date <= GETDATE()) as x GROUP BY x.serviceId, x.name ORDER BY total DESC";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setString(1, date);
+				
+				ResultSet rs = stmt.executeQuery();
+				while(rs.next()) {
+					ServiceDTO em = new ServiceDTO();
+					em.setServiceId(rs.getInt("serviceId"));
+					em.setName(rs.getString("name"));
+					em.setPrice(rs.getInt("total"));
+					
+					arr.add(em);
+				}
+				
+			} catch (Exception ex) {
+				System.out.println(ex);
+			} finally { closeConnection(); } 
+		}
+		
+		return arr;
+	 }
+	
 	public boolean addService(ServiceDTO service) {
 		boolean result = false;
 		if (openConnection()) {
@@ -128,23 +159,24 @@ public class ServiceDAO {
 		return result;
 	}
 	
-    public boolean searchCustomer(ServiceDTO service) {
-            boolean result = false;
-            if (openConnection()) {
-                try {
-                String sql = "SELECT * FROM Customer WHERE customerId = " + service.getServiceId();
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery(sql);
-                result = rs.next();
+    public boolean searchService(ServiceDTO service) {
+		boolean result = false;
 
-                } catch (SQLException ex) {
-			System.out.println(ex);
-                } finally{
-			closeConnection();
-                } 
-            }
-            return result;
-    }
+		if (openConnection()) {
+			try {
+			String sql = "Select * from Service where serviceId = " + service.getServiceId();
+			Statement stmt = con.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			result = rs.next();
+
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally{
+		closeConnection();
+			} 
+		}
+		return result;
+	}
     
 
 	public boolean hasServiceID(int id){
@@ -176,4 +208,5 @@ public class ServiceDAO {
 			} finally { closeConnection(); } }
 		return result;
 	}
+	
 }

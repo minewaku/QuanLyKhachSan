@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 
 import DTO.RoomDTO;
+import DTO.ServiceDTO;
 
 public class RoomDAO {
 	private Connection con;
@@ -59,6 +60,36 @@ public class RoomDAO {
 			} finally {
 				closeConnection();
 			} 
+		}
+		
+		return arr;
+	}
+	
+	public ArrayList<RoomDTO> mostRoom(String day, String month, String year){
+		
+		ArrayList<RoomDTO> arr = new ArrayList<RoomDTO>();
+		if (openConnection()){
+			try {
+				String date = year + "-" + month + "-1" ;
+				 
+				String sql = "SELECT x.roomId, x.size, x.type, x.price, sum(x.rentDate) as totalRent FROM (select r.roomId, r.size, r.type, r.price, a.rentDate FROM Room as r INNER JOIN Reservations as a on r.roomId = a.roomId WHERE a.arrivalDate >= ? and a.arrivalDate <= getdate()) as x GROUP BY x.roomId, x.size, x.type, x.price ORDER BY totalRent DESC;";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setString(1, date);
+				
+				ResultSet rs = stmt.executeQuery();
+				while(rs.next()) {
+					RoomDTO em = new RoomDTO();
+					em.setRoomId(rs.getInt("roomId"));
+					em.setSize(rs.getString("size"));
+					em.setType(rs.getString("type"));
+					em.setPrice(rs.getInt("totalRent"));
+					
+					arr.add(em);
+				}	
+			}
+			
+			catch (SQLException ex) {System.out.println(ex);}
+			finally {closeConnection();}
 		}
 		
 		return arr;

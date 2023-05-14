@@ -14,6 +14,7 @@ import DTO.CustomerDTO;
 import DTO.PaymentDTO;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.GroupLayout;
+import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 public class PaymentGUI extends javax.swing.JFrame {
@@ -42,6 +43,8 @@ public class PaymentGUI extends javax.swing.JFrame {
     private javax.swing.JTextField tfPaymentId;
     private javax.swing.JTextField tfCustomerId;
     private javax.swing.JTextField tfStaffId;
+    private javax.swing.JTextField tfSearch;
+    private javax.swing.JButton searchBtn;
     // End of variables declaration//GEN-END:variables
     
     public PaymentGUI() {
@@ -49,6 +52,9 @@ public class PaymentGUI extends javax.swing.JFrame {
         loadStaffId();
         loadPaymentList();
         loadCustomerList();
+        setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setVisible(true);
     }
     
     @SuppressWarnings("unchecked")
@@ -75,6 +81,8 @@ public class PaymentGUI extends javax.swing.JFrame {
         table_1 = new javax.swing.JTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         table_2 = new javax.swing.JTable();
+        searchBtn = new javax.swing.JButton();
+        tfSearch = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Quản lý khách sạn");
@@ -271,6 +279,25 @@ public class PaymentGUI extends javax.swing.JFrame {
         table_1.setBackground(new java.awt.Color(192, 192, 192));
         table_1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         jScrollPane1.setViewportView(table_1);
+        
+        searchBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        searchBtn.setText("Search");
+        searchBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+                            try {
+                                if (tfSearch.getText().trim().equals("")) {
+                                    lblError.setText("Vui lòng nhập đầy đủ thông tin ");
+                                }
+                                
+                                else {
+                                    searchPaymentByID();
+                                }
+                                
+                            } catch (NumberFormatException ex) {
+                                lblError.setText("Xảy ra lỗi");
+                            }
+			}
+		});
 
         table_2.setBackground(new java.awt.Color(192, 192, 192));
         table_2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -283,9 +310,13 @@ public class PaymentGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(21, 21, 21)
                 .addComponent(contentPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(284, 284, 284)
+                        .addComponent(searchBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(47, 47, 47)
                         .addComponent(lblTitle, javax.swing.GroupLayout.DEFAULT_SIZE, 313, Short.MAX_VALUE)
                         .addGap(227, 227, 227))
                     .addGroup(layout.createSequentialGroup()
@@ -304,19 +335,41 @@ public class PaymentGUI extends javax.swing.JFrame {
                         .addComponent(contentPane, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(searchBtn)
+                            .addComponent(tfSearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))))
         );
 
-    }
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void editBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editBtnActionPerformed
+        
+    }//GEN-LAST:event_editBtnActionPerformed
+
+    private void addBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBtnActionPerformed
+        
+    }//GEN-LAST:event_addBtnActionPerformed
 
     private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
 
     }//GEN-LAST:event_tableMouseClicked
 
+    private void exitBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitBtnActionPerformed
+
+    }//GEN-LAST:event_exitBtnActionPerformed
+
+    private void deleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteBtnActionPerformed
+       
+    }//GEN-LAST:event_deleteBtnActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -346,6 +399,38 @@ public class PaymentGUI extends javax.swing.JFrame {
                 new PaymentGUI().setVisible(true);
             }
         });
+    }
+    
+    public void searchPaymentByID() {
+        DefaultTableModel model = new DefaultTableModel();
+        ArrayList<PaymentDTO> arr = new ArrayList<PaymentDTO>();
+        arr = paymentBUS.getAllPayments();
+        PaymentDTO em = new PaymentDTO();
+        int id = Integer.parseInt(tfSearch.getText().trim());
+        em.setPaymentId(id);
+        String message = paymentBUS.searchPayment(em);
+
+        if (message.equals("thành công")) {
+            for (int i = 0; i < arr.size(); i++) {
+                PaymentDTO dto = arr.get(i);
+                if (dto.getPaymentId()== id) {
+                    int paymentId = em.getPaymentId();
+                    int customerId = em.getCustomerId();
+                    int staffId = em.getStaffId();
+                    String createDate = em.getCreateDate();
+                    String paymentDate = em.getPaymentDate();
+                    int total = em.getTotal();
+                    String status = (em.getStatus() ? "paid" : "unpaid");
+                    Object[] rowData = {paymentId, customerId, staffId, createDate, paymentDate, total, status};
+                    model.addRow(rowData);
+                    table_1.setRowSelectionInterval(i, i);
+                    break;
+                }
+            }
+        
+        } else {
+            JOptionPane.showMessageDialog(null, message);
+        }
     }
 
     private void loadStaffId() {

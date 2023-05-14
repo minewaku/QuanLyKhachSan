@@ -71,13 +71,14 @@ public class StaffBUS {
 		return staff.loginUser(Staff.getId(), Staff.getPassword());
 	}
 	
-        public String searchStaff(StaffDTO Staff) {
-            if (!staff.hasStaffID(Staff.getId()))
-			return "Mã Nhân Viên không tồn tại";
-		
-		if (staff.deleteStaff(Staff))
-			return "thành công";
-		
-		return "Không tìm thấy Mã Khách Hàng";
-        }
+	
+    public String searchStaff(StaffDTO Staff) {
+        if (!staff.hasStaffID(Staff.getId()))
+        	return "Mã Nhân Viên không tồn tại";
+        
+        if (staff.searchStaff(Staff))
+        	return "thành công";
+        
+        return "Không tìm thấy Mã Nhân Viên";
+    }
 }

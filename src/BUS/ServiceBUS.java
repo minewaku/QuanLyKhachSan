@@ -11,6 +11,10 @@ public class ServiceBUS {
 	public ArrayList<ServiceDTO> getAllServices(){
 		return service.getAllServices();
 	}
+	
+	public ArrayList<ServiceDTO> mostOrder(String day, String month, String year) {
+		return service.mostOrder(day, month, year);
+	}
 
 	public String addService(ServiceDTO Service) {
 		if (service.hasServiceID(Service.getServiceId()))
@@ -48,13 +52,14 @@ public class ServiceBUS {
 		return "Xóa thất bại";
 	}
         
-    public String searchService(ServiceDTO Service) {
+    
+	public String searchService(ServiceDTO Service) {
 		if (!service.hasServiceID(Service.getServiceId()))
 			return "Mã Dịch Vụ không tồn tại";
-		
-		if (service.deleteService(Service))
+	
+		if (service.searchService(Service))
 			return "thành công";
-		
+	
 		return "Không tìm thấy Mã Dịch Vụ";
 	}
 	

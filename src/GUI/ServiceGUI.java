@@ -401,7 +401,7 @@ public class ServiceGUI extends javax.swing.JFrame {
         });
     }
     
-        public void searchServiceByID() {
+    public void searchServiceByID() {
         DefaultTableModel model = new DefaultTableModel();
         ArrayList<ServiceDTO> arr = new ArrayList<ServiceDTO>();
         arr = serviceBUS.getAllServices();
@@ -414,9 +414,9 @@ public class ServiceGUI extends javax.swing.JFrame {
         // Nếu tìm thấy khách hàng, cập nhật model và bôi đen hàng tương ứng
         if (message.equals("thành công")) {
             for (int i = 0; i < arr.size(); i++) {
-                ServiceDTO dto = arr.get(i);
-                if (dto.getServiceId()== id) {
-                    Object[] rowData = {dto.getServiceId(), dto.getName(), dto.getPrice()};
+                em = arr.get(i);
+                if (em.getServiceId()== id) {
+                    Object[] rowData = {em.getServiceId(), em.getName(), em.getPrice()};
                     model.addRow(rowData);
                     table.setRowSelectionInterval(i, i);
                     break;

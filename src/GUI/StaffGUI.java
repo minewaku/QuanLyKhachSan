@@ -479,26 +479,21 @@ public class StaffGUI extends javax.swing.JFrame {
         DefaultTableModel model = new DefaultTableModel();
         ArrayList<StaffDTO> arr = new ArrayList<StaffDTO>();
         arr = staffBUS.getAllStaffs();
-        // Gọi phương thức searchCustomer từ CustomerBUS để tìm kiếm khách hàng
         StaffDTO em = new StaffDTO();
         int id = Integer.parseInt(tfSearch.getText().trim());
         em.setId(id);
         String message = staffBUS.searchStaff(em);
 
-        // Nếu tìm thấy khách hàng, cập nhật model và bôi đen hàng tương ứng
         if (message.equals("thành công")) {
             for (int i = 0; i < arr.size(); i++) {
-                StaffDTO dto = arr.get(i);
-                if (dto.getId() == id) {
-                    Object[] rowData = {dto.getId(), dto.getFullname(), dto.getPhone(), dto.getGender(), dto.getBirthday(), dto.getSalary(), dto.getPassword()};
+                em = arr.get(i);
+                if (em.getId() == id) {
+                    Object[] rowData = {em.getId(), em.getFullname(), em.getPhone(), em.getGender(), em.getBirthday(), em.getSalary(), em.getPassword()};
                     model.addRow(rowData);
                     table.setRowSelectionInterval(i, i);
                     break;
                 }
             }
-        
-        } else {
-            JOptionPane.showMessageDialog(null, message);
         }
     }
     

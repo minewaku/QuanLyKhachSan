@@ -423,31 +423,24 @@ public class RoomGUI extends javax.swing.JFrame {
         });
     }
     
-    
-        public void searchRoomByID() {
+    public void searchRoomByID() {
         DefaultTableModel model = new DefaultTableModel();
         ArrayList<RoomDTO> arr = new ArrayList<RoomDTO>();
         arr = roomBUS.getAllRooms();
-        // Gọi phương thức searchCustomer từ CustomerBUS để tìm kiếm khách hàng
         RoomDTO em = new RoomDTO();
         int id = Integer.parseInt(tfSearch.getText().trim());
         em.setRoomId(id);
         String message = roomBUS.searchRoom(em);
-
-        // Nếu tìm thấy khách hàng, cập nhật model và bôi đen hàng tương ứng
-        if (message.equals("true")) {
+        if (message.equals("thành công")) {
             for (int i = 0; i < arr.size(); i++) {
-                RoomDTO dto = arr.get(i);
-                if (dto.getRoomId()== id) {
-                    Object[] rowData = {dto.getRoomId(), dto.getSize(), dto.getType(), dto.getStatus()};
+                em = arr.get(i);
+                if (em.getRoomId()== id) {
+                    Object[] rowData = {em.getRoomId(), em.getSize(), em.getType(), em.getStatus()};
                     model.addRow(rowData);
                     table.setRowSelectionInterval(i, i);
                     break;
                 }
             }
-        
-        } else {
-            JOptionPane.showMessageDialog(null, message);
         }
     }
     

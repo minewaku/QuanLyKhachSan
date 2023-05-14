@@ -10,6 +10,21 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import java.awt.Desktop;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import DTO.ReservationsDTO;
 import DTO.RoomDTO;
 import GUI.LoginGUI;
@@ -69,6 +84,36 @@ public class ReservationsDAO {
 		
 		return arr;
 	}
+	
+	public ArrayList<ReservationsDTO> getReservation(int paymentId){
+		ArrayList<ReservationsDTO> arr = new ArrayList<ReservationsDTO>();
+		
+		if (openConnection()) {
+			try {
+				String sql = "Select * from Reservations where paymentId = " + paymentId;
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				while(rs.next()){
+					ReservationsDTO em = new ReservationsDTO();
+					em.setReservationId(rs.getInt("reservationId"));
+					em.setPaymentId(rs.getInt("paymentId"));
+					em.setRoomId(rs.getInt("roomId"));
+					em.setArrivalDate(rs.getString("arrivalDate"));
+					em.setRentDate(rs.getInt("rentDate"));
+					em.setAmount(rs.getInt("amount")); 
+
+					arr.add(em); 
+				}
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally {
+				closeConnection();
+			} 
+		}
+		
+		return arr;
+	}
+	
 	
 	public boolean addReservations(ReservationsDTO reservation) {
 		boolean result = false;

@@ -144,23 +144,23 @@ public class StaffDAO {
 		return result;
 	}
         
-        public boolean searchCustomer(StaffDTO staff) {
-            boolean result = false;
-            if (openConnection()) {
-                try {
-                String sql = "SELECT * FROM Customer WHERE customerId = " + staff.getId();
-                Statement stmt = con.createStatement();
-                ResultSet rs = stmt.executeQuery(sql);
-                result = rs.next();
+    public boolean searchStaff(StaffDTO staff) {
+        boolean result = false;
+        if (openConnection()) {
+            try {
+            String sql = "SELECT * FROM Staff WHERE staffID = " + staff.getId();
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            result = rs.next();
 
-                } catch (SQLException ex) {
-			System.out.println(ex);
-                } finally{
-			closeConnection();
-                } 
-            }
-            return result;
+            } catch (SQLException ex) {
+		System.out.println(ex);
+            } finally{
+		closeConnection();
+            } 
         }
+        return result;
+    }
 	
 
 	public boolean hasStaffID(int id){

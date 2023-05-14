@@ -21,7 +21,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 
 import BUS.PaymentBUS;
-import BUS.ReservationBUS;
+import BUS.ReservationsBUS;
 import BUS.RoomBUS;
 import DTO.PaymentDTO;
 import DTO.ReservationsDTO;
@@ -60,7 +60,7 @@ public class ReservationsGUI extends javax.swing.JFrame {
     private JScrollPane scrollPane_1;
     private JTable roomTable;
     
-    ReservationBUS reservationBUS = new ReservationBUS();
+    ReservationsBUS reservationBUS = new ReservationsBUS();
     PaymentBUS paymentBUS = new PaymentBUS();
     RoomBUS roomBUS = new RoomBUS();
     

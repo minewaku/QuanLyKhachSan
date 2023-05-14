@@ -74,6 +74,37 @@ public class OrdersDAO {
 		return arr;
 	}
 	
+	public ArrayList<OrdersDTO> getOrder(int paymentId){
+		ArrayList<OrdersDTO> arr = new ArrayList<OrdersDTO>();
+		
+		if (openConnection()) {
+			try {
+				String sql = "Select * from Orders as o inner join Reservations as r on o.reservationId = r.reservationId where r.paymentId = " + paymentId;
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				
+				while(rs.next()){
+					OrdersDTO em = new OrdersDTO();
+					em.setOrderId(rs.getInt("orderId"));
+					em.setReservationId(rs.getInt("reservationId"));
+					em.setServiceId(rs.getInt("serviceId"));
+					em.setStaffId(rs.getInt("staffId"));
+					em.setQuantity(rs.getInt("quantity"));
+					em.setDate(rs.getString("date"));
+					em.setAmount(rs.getInt("amount")); 
+
+					arr.add(em); 
+				}
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally {
+				closeConnection();
+			} 
+		}
+		
+		return arr;
+	}
+	
 	public boolean addOrders(OrdersDTO order) {
 		boolean result = false;
 		if (openConnection()) {

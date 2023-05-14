@@ -4,12 +4,17 @@ import java.util.ArrayList;
 
 import DAO.RoomDAO;
 import DTO.RoomDTO;
+import DTO.ServiceDTO;
 
 public class RoomBUS {
 	RoomDAO room = new RoomDAO();
 	
 	public ArrayList<RoomDTO> getAllRooms(){
 		return room.getAllRooms();
+	}
+	
+	public ArrayList<RoomDTO> mostRoom(String day, String month, String year) {
+		return room.mostRoom(day, month, year);
 	}
 	
 	public ArrayList<RoomDTO> getAllEmptyRooms(){

@@ -70,6 +70,68 @@ public class PaymentDAO {
 		return arr;
 	}
 	
+	public ArrayList<PaymentDTO> mostPayment(String day, String month, String year){
+		ArrayList<PaymentDTO> arr = new ArrayList<PaymentDTO>();
+		
+		if (openConnection()) {
+			try {
+				String date = year + "-" + month + "-1" ;
+				
+				String sql = "select * from Payment as p where p.createDate >= ? and p.createDate <= GETDATE() order by p.total desc";
+				PreparedStatement stmt = con.prepareStatement(sql);
+				stmt.setString(1, date);
+				ResultSet rs = stmt.executeQuery();
+				while(rs.next()){
+					PaymentDTO em = new PaymentDTO();
+					
+					em.setPaymentId(rs.getInt("paymentId"));
+					em.setCustomerId(rs.getInt("customerId"));
+					em.setStaffId(rs.getInt("staffId"));
+					em.setCreateDate(rs.getString("createDate"));
+					em.setPaymentDate(rs.getString("paymentDate")); 
+					em.setTotal(rs.getInt("total"));
+					em.setStatus(rs.getBoolean("status")); 
+
+					arr.add(em); 
+				}
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally {
+				closeConnection();
+			} 
+		}
+		
+		return arr;
+	}
+	
+	public PaymentDTO getPayment(int id) {
+		PaymentDTO payment = new PaymentDTO();
+		
+		if(openConnection()) {
+			try {
+				String sql = "Select * from Payment where paymentId = " + id;
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				rs.next();
+				
+				payment.setPaymentId(rs.getInt("paymentId"));
+				payment.setCustomerId(rs.getInt("customerId"));
+				payment.setStaffId(rs.getInt("StaffId"));
+				payment.setCreateDate(rs.getString("createDate"));
+				payment.setPaymentDate(rs.getString("paymentDate"));
+				payment.setTotal(rs.getInt("total"));
+				payment.setStatus(rs.getBoolean("status"));
+				
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally {
+				closeConnection();
+			}
+		}
+		
+		return payment;
+	}
+	
 	public boolean addPayment(PaymentDTO payment) {
 		boolean result = false;
 		if (openConnection()) {
@@ -140,6 +202,21 @@ public class PaymentDAO {
 		
 		return result;
 	}
+	
+	public boolean searchPayment(PaymentDTO payment){
+		boolean result = false;
+			
+			if (openConnection()) {
+				try {
+					String sql = "Select * from Payment where paymentId = " + payment.getPaymentId();
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				result = rs.next();
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally { closeConnection(); } }
+		return result;
+	}
 
 	public boolean hasPaymentId(int id){
 		boolean result = false;
@@ -176,6 +253,12 @@ public class PaymentDAO {
 		return result;
 
 	}
+	
+	private boolean checkDatelarger(String date) {
+		boolean result = false;
+		
+		return result;
+	}
 
 	public boolean calTotal(int id) {
 		
@@ -194,7 +277,6 @@ public class PaymentDAO {
 				Statement stmt_2 = con.createStatement();
 				ResultSet rs_2 = stmt_2.executeQuery(sql_calTotal_2);
 				while(rs_2.next()) {
-					System.out.println("amount from orders: " + rs_2.getInt("amount"));
 					total = total + rs_2.getInt("amount");
 				}
 

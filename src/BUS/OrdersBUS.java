@@ -18,6 +18,10 @@ public class OrdersBUS {
 	public ArrayList<OrdersDTO> getAllOrders(){
 		return orders.getAllOrders();
 	}
+	
+	public ArrayList<OrdersDTO> getOrder(int paymentId){
+		return orders.getOrder(paymentId);
+	}
 
 	public String addOrders(OrdersDTO Orders) {
 		

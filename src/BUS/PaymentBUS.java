@@ -14,6 +14,14 @@ public class PaymentBUS {
 	public ArrayList<PaymentDTO> getAllPayments(){
 		return payment.getAllPayments();
 	}
+	
+	public ArrayList<PaymentDTO> mostPayment(String day, String month, String year){
+		return payment.mostPayment(day, month, year);
+	}
+	
+	public PaymentDTO getPayment(int id) {
+		return payment.getPayment(id);
+	}
 
 	public String addPayment(PaymentDTO Payment, int id) {
 		if (payment.hasPaymentId(Payment.getPaymentId()))
@@ -49,6 +57,16 @@ public class PaymentBUS {
 			return "Xóa thành công";
 		
 		return "Xóa thất bại";
+	}
+	
+	public String searchPayment(PaymentDTO Payment) {
+		if (!payment.hasPaymentId(Payment.getPaymentId()))
+			return "Mã Thanh Toán không tồn tại";
+		
+		if (payment.searchPayment(Payment))
+			return "thành công";
+		
+		return "Không tìm thấy Mã Thanh Toán";
 	}
 	
 	public String pay(PaymentDTO Payment) {

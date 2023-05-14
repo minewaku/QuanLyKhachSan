@@ -18,7 +18,7 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 
 import BUS.OrdersBUS;
-import BUS.ReservationBUS;
+import BUS.ReservationsBUS;
 import BUS.ServiceBUS;
 import DTO.OrdersDTO;
 import DTO.PaymentDTO;
@@ -30,7 +30,7 @@ import javax.swing.JTextField;
 public class OrdersGUI extends javax.swing.JFrame {
 	
 	OrdersBUS orderBUS = new OrdersBUS();
-	ReservationBUS reservationBUS = new ReservationBUS();
+	ReservationsBUS reservationBUS = new ReservationsBUS();
 	ServiceBUS serviceBUS = new ServiceBUS();
 	LoginGUI user = new LoginGUI();
 	
