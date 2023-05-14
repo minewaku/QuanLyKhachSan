@@ -6,7 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import DTO.ServiceDTO;
 
@@ -63,18 +66,16 @@ public class ServiceDAO {
 		return arr;
 	}
 	
-	public ArrayList<ServiceDTO> mostOrder(String day, String month, String year) {		 
+	public ArrayList<ServiceDTO> mostOrder(String from, String to) {		 
 		 
 		ArrayList<ServiceDTO> arr = new ArrayList<ServiceDTO>();
 		
 		if (openConnection()) {
 			try {
-
-				String date = year + "-" + month + "-" + day;
-				 
-				String sql = "SELECT x.serviceId, x.name, sum(x.quantity) as total FROM (SELECT s.serviceId, s.name, o.quantity FROM Service as s INNER JOIN Orders as o ON s.serviceId = o.serviceId WHERE o.date >= ? AND o.date <= GETDATE()) as x GROUP BY x.serviceId, x.name ORDER BY total DESC";
+				String sql = "SELECT x.serviceId, x.name, sum(x.quantity) as total FROM (SELECT s.serviceId, s.name, o.quantity FROM Service as s INNER JOIN Orders as o ON s.serviceId = o.serviceId WHERE o.date >= ? AND o.date <= ?) as x GROUP BY x.serviceId, x.name ORDER BY total DESC";
 				PreparedStatement stmt = con.prepareStatement(sql);
-				stmt.setString(1, date);
+				stmt.setString(1, from);
+				stmt.setString(2, to);
 				
 				ResultSet rs = stmt.executeQuery();
 				while(rs.next()) {
@@ -206,6 +207,34 @@ public class ServiceDAO {
 			} catch (SQLException ex) {
 				System.out.println(ex);
 			} finally { closeConnection(); } }
+		return result;
+	}
+	
+	public boolean checkIfDateIsValid(String date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        format.setLenient(false);
+        try {
+            format.parse(date);
+        } catch (ParseException e) {
+            return false;
+        }
+        return true;
+	}
+	
+	public boolean compareDate(String dateString1, String dateString2) {
+		boolean result = false;
+		try {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");  
+			Date date1 = format.parse(dateString1);  
+			Date date2 = format.parse(dateString2);
+			
+			if (date2.compareTo(date1) >= 0)
+				result = true;
+			
+		} catch (ParseException ex) {
+			System.out.println(ex);
+		}
+		
 		return result;
 	}
 	

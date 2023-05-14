@@ -6,7 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import DTO.RoomDTO;
 import DTO.ServiceDTO;
@@ -65,16 +68,15 @@ public class RoomDAO {
 		return arr;
 	}
 	
-	public ArrayList<RoomDTO> mostRoom(String day, String month, String year){
+	public ArrayList<RoomDTO> mostRoom(String from, String to){
 		
 		ArrayList<RoomDTO> arr = new ArrayList<RoomDTO>();
 		if (openConnection()){
 			try {
-				String date = year + "-" + month + "-1" ;
-				 
-				String sql = "SELECT x.roomId, x.size, x.type, x.price, sum(x.rentDate) as totalRent FROM (select r.roomId, r.size, r.type, r.price, a.rentDate FROM Room as r INNER JOIN Reservations as a on r.roomId = a.roomId WHERE a.arrivalDate >= ? and a.arrivalDate <= getdate()) as x GROUP BY x.roomId, x.size, x.type, x.price ORDER BY totalRent DESC;";
+				String sql = "SELECT x.roomId, x.size, x.type, x.price, sum(x.rentDate) as totalRent FROM (select r.roomId, r.size, r.type, r.price, a.rentDate FROM Room as r INNER JOIN Reservations as a on r.roomId = a.roomId WHERE a.arrivalDate >= ? and a.arrivalDate <= ?) as x GROUP BY x.roomId, x.size, x.type, x.price ORDER BY totalRent DESC;";
 				PreparedStatement stmt = con.prepareStatement(sql);
-				stmt.setString(1, date);
+				stmt.setString(1, from);
+				stmt.setString(2, to);
 				
 				ResultSet rs = stmt.executeQuery();
 				while(rs.next()) {
@@ -270,6 +272,34 @@ public class RoomDAO {
 			} catch (SQLException ex) {
 				System.out.println(ex);
 			} finally { closeConnection(); } }
+		return result;
+	}
+	
+	public boolean checkIfDateIsValid(String date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        format.setLenient(false);
+        try {
+            format.parse(date);
+        } catch (ParseException e) {
+            return false;
+        }
+        return true;
+	}
+	
+	public boolean compareDate(String dateString1, String dateString2) {
+		boolean result = false;
+		try {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");  
+			Date date1 = format.parse(dateString1);  
+			Date date2 = format.parse(dateString2);
+			
+			if (date2.compareTo(date1) >= 0)
+				result = true;
+			
+		} catch (ParseException ex) {
+			System.out.println(ex);
+		}
+		
 		return result;
 	}
 }

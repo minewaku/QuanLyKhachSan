@@ -15,8 +15,8 @@ public class PaymentBUS {
 		return payment.getAllPayments();
 	}
 	
-	public ArrayList<PaymentDTO> mostPayment(String day, String month, String year){
-		return payment.mostPayment(day, month, year);
+	public ArrayList<PaymentDTO> mostPayment(String from, String to){
+		return payment.mostPayment(from, to);
 	}
 	
 	public PaymentDTO getPayment(int id) {
@@ -68,6 +68,10 @@ public class PaymentBUS {
 		
 		return "Không tìm thấy Mã Thanh Toán";
 	}
+  	
+    public ArrayList<PaymentDTO> searchRange(int x, int y) {	
+        return payment.searchRange(x, y);	
+    }
 	
 	public String pay(PaymentDTO Payment) {
 		if (payment.pay(Payment))

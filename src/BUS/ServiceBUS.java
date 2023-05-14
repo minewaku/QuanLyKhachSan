@@ -12,8 +12,8 @@ public class ServiceBUS {
 		return service.getAllServices();
 	}
 	
-	public ArrayList<ServiceDTO> mostOrder(String day, String month, String year) {
-		return service.mostOrder(day, month, year);
+	public ArrayList<ServiceDTO> mostOrder(String from, String to) {
+		return service.mostOrder(from, to);
 	}
 
 	public String addService(ServiceDTO Service) {

@@ -22,7 +22,7 @@ public class CustomerBUS {
 			return "Số điện thoại không hợp lệ";
 		
 		if (!cus.checkIfDateIsValid(Customer.getBirthday()))
-			return "Ngày không hợp lệ (MM/dd/yyyy)";
+			return "Ngày không hợp lệ (yyyy-MM-dd)";
 		
 		if (cus.addCustomer(Customer))
 			return "Thêm thành công";
@@ -41,7 +41,7 @@ public class CustomerBUS {
 			return "Số điện thoại không hợp lệ";
 		
 		if (!cus.checkIfDateIsValid(Customer.getBirthday()))
-			return "Ngày không hợp lệ (MM/dd/yyyy)";
+			return "Ngày không hợp lệ (yyyy-MM-dd)";
 		
 		if (cus.editCustomer(Customer))
 			return "Chỉnh sửa thành công";

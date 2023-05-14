@@ -221,7 +221,7 @@ public class StaffDAO {
 	}
 	
 	 public boolean checkIfDateIsValid(String date) {
-	        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+	        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 	        format.setLenient(false);
 	        try {
 	            format.parse(date);

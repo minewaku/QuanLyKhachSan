@@ -1,5 +1,10 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
 package GUI;
 
+import java.awt.Color;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,12 +16,9 @@ import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.table.DefaultTableModel;
 
@@ -29,68 +31,184 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import BUS.PaymentBUS;
 import BUS.RoomBUS;
 import BUS.ServiceBUS;
+import DAO.PaymentDAO;
+import DAO.RoomDAO;
+import DAO.ServiceDAO;
 import DTO.PaymentDTO;
 import DTO.RoomDTO;
 import DTO.ServiceDTO;
-public class StatisticGUI extends JFrame{
-	
+
+/**
+ *
+ * @author ADMIN
+ */
+public class StatisticGUI extends javax.swing.JFrame {
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton exitBtn;
+    private javax.swing.JButton exportBtn;
+    private javax.swing.JButton roomStBtn;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable table;
+    private javax.swing.JTextField tfFrom;
+    private javax.swing.JTextField tfTo;
+    private javax.swing.JLabel lblContent;
+    private javax.swing.JButton refreshBtn;
+    private javax.swing.JButton paymentStBtn;
+    private javax.swing.JButton serviceStBtn;
+    private JLabel lblError;
+    // End of variables declaration//GEN-END:variables
+    
 	PaymentBUS paymentBUS = new PaymentBUS();
 	RoomBUS roomBUS = new RoomBUS();
 	ServiceBUS serviceBUS = new ServiceBUS();
+	
+	PaymentDAO payment = new PaymentDAO();
+	RoomDAO room = new RoomDAO();
+	ServiceDAO service = new ServiceDAO();
 	ArrayList<PaymentDTO> arr = new ArrayList<PaymentDTO>();
 	
-	public static void main(String[] args) {
+    public StatisticGUI() {
+        initComponents();
+        setLocationRelativeTo(null);
+        setDefaultLookAndFeelDecorated(true);
+        setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setVisible(true);
+    }
 
-		JFrame.setDefaultLookAndFeelDecorated(false);
-		StatisticGUI frame = new StatisticGUI();
-		
-		frame.setLocationRelativeTo(null);
-		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-		frame.setUndecorated(true);
-		frame.setVisible(true);
-	}
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-	public StatisticGUI() {
-		initComponents();
-		loadPaymentList();
-	}
-	
-	public void initComponents() {
-		
-		JScrollPane scrollPane = new JScrollPane();
-		
-		JLabel lblNewLabel = new JLabel("Payment");
-		
-		JButton serviceStBtn = new JButton("ServiceStatistic");
-		serviceStBtn.addActionListener(new ActionListener() {
+        lblContent = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        table = new javax.swing.JTable();
+        paymentStBtn = new javax.swing.JButton();
+        serviceStBtn = new javax.swing.JButton();
+        roomStBtn = new javax.swing.JButton();
+        exitBtn = new javax.swing.JButton();
+        exportBtn = new javax.swing.JButton();
+        refreshBtn = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        tfFrom = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        tfTo = new javax.swing.JTextField();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(192, 192, 192));
+
+        lblContent.setBackground(new java.awt.Color(192, 192, 192));
+        lblContent.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
+        lblContent.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        lblContent.setText("STATISTIC");
+
+        table.setBackground(new java.awt.Color(192, 192, 192));
+        table.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jScrollPane1.setViewportView(table);
+
+        paymentStBtn.setText("Highest payment");
+        paymentStBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loadServiceStatistic();
+				try {
+					if (tfFrom.getText().trim().equals("") || tfTo.getText().trim().equals(""))
+						lblError.setText("Vui lòng nhập đủ thông tin");
+					else {
+						String from = tfFrom.getText().trim();
+						String to = tfTo.getText().trim();
+						
+						if (payment.checkIfDateIsValid(from) && payment.checkIfDateIsValid(to)) {
+							if(payment.compareDate(from, to)) {
+								loadPaymentStatistic(from, to);
+								lblError.setText("");
+							}
+							else {
+								lblError.setText("Ngày đầu phải bé hơn ngày cuối");
+							}
+						}
+						else
+							lblError.setText("Ngày không hợp lệ(yyyy-MM-dd)");
+					}
+				} catch (NumberFormatException ex) {
+					System.out.println(ex);
+				}
 			}
 		});
-		
-		JButton roomStBtn = new JButton("RoomStatistic");
-		roomStBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				loadRoomStatistic();
+        
+        serviceStBtn.setText("Most ordered service");
+        serviceStBtn.addActionListener(new ActionListener() {
+    		public void actionPerformed(ActionEvent e) {
+				try {
+					if (tfFrom.getText().trim().equals("") || tfTo.getText().trim().equals(""))
+						lblError.setText("Vui lòng nhập đủ thông tin");
+					else {
+						String from = tfFrom.getText().trim();
+						String to = tfTo.getText().trim();
+						
+						if (service.checkIfDateIsValid(from) && service.checkIfDateIsValid(to)) {
+							if(service.compareDate(from, to)) {
+								loadServiceStatistic(from, to);
+								lblError.setText("");
+							}
+							else {
+								lblError.setText("Ngày đầu phải bé hơn ngày cuối");
+							}
+						}
+						else
+							lblError.setText("Ngày không hợp lệ(yyyy-MM-dd)");
+					}
+				} catch (NumberFormatException ex) {
+					System.out.println(ex);
+				}
 			}
 		});
-		
-		JButton paymentStBtn = new JButton("PaymentStatistic");
-		paymentStBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				loadPaymentStatistic();
+
+        roomStBtn.setText("Most booked room");
+        roomStBtn.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+				try {
+					if (tfFrom.getText().trim().equals("") || tfTo.getText().trim().equals(""))
+						lblError.setText("Vui lòng nhập đủ thông tin");
+					else {
+						String from = tfFrom.getText().trim();
+						String to = tfTo.getText().trim();
+						
+						if (room.checkIfDateIsValid(from) && room.checkIfDateIsValid(to)) {
+							if(room.compareDate(from, to)) {
+								loadRoomStatistic(from, to);
+								lblError.setText("");
+							}
+							else {
+								lblError.setText("Ngày đầu phải bé hơn ngày cuối");
+							}
+						}
+						else
+							lblError.setText("Ngày không hợp lệ(yyyy-MM-dd)");
+					}
+				} catch (NumberFormatException ex) {
+					System.out.println(ex);
+				}
 			}
 		});
-		
-		JButton refreshBtn = new JButton("New button");
-		refreshBtn.addActionListener(new ActionListener() {
+
+        exitBtn.setText("exit");
+        exitBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				loadPaymentList();
+				dispose();
+				JFrame.setDefaultLookAndFeelDecorated(false);
+				
+		        MenuGUI frame = new MenuGUI();
+				frame.setLocationRelativeTo(null);
+				frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+				frame.setUndecorated(true);
+				frame.setVisible(true);
 			}
 		});
-		
-		JButton exportBtn = new JButton("New button");
-		exportBtn.addActionListener(new ActionListener() {
+
+        exportBtn.setText("export");
+        exportBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
                 try {
                 	JFileChooser jf = new JFileChooser();
@@ -129,76 +247,118 @@ public class StatisticGUI extends JFrame{
                 }
 			}
 		});
-		
-		JButton exitBtn = new JButton("New button");
-		exitBtn.addActionListener(new ActionListener() {
+
+        refreshBtn.setText("refresh");
+    	refreshBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dispose();
-				JFrame.setDefaultLookAndFeelDecorated(false);
-				
-		        MenuGUI frame = new MenuGUI();
-				frame.setLocationRelativeTo(null);
-				frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
-				frame.setUndecorated(true);
-				frame.setVisible(true);
+				loadEmpty();
 			}
 		});
-		GroupLayout groupLayout = new GroupLayout(getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(refreshBtn, GroupLayout.PREFERRED_SIZE, 73, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addComponent(serviceStBtn)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(roomStBtn)
-							.addPreferredGap(ComponentPlacement.RELATED)
-							.addComponent(paymentStBtn))
-						.addComponent(exitBtn, GroupLayout.PREFERRED_SIZE, 267, GroupLayout.PREFERRED_SIZE))
-					.addGap(18)
-					.addComponent(exportBtn)
-					.addContainerGap())
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(52)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
-					.addGap(61))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(210)
-					.addComponent(lblNewLabel, GroupLayout.PREFERRED_SIZE, 45, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(226, Short.MAX_VALUE))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(16)
-					.addComponent(lblNewLabel)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE)
-					.addGap(18)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
-						.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-							.addComponent(refreshBtn, GroupLayout.PREFERRED_SIZE, 60, GroupLayout.PREFERRED_SIZE)
-							.addComponent(exportBtn, GroupLayout.PREFERRED_SIZE, 55, GroupLayout.PREFERRED_SIZE))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-								.addComponent(serviceStBtn, GroupLayout.PREFERRED_SIZE, 21, GroupLayout.PREFERRED_SIZE)
-								.addComponent(roomStBtn)
-								.addComponent(paymentStBtn))
-							.addGap(18)
-							.addComponent(exitBtn)))
-					.addContainerGap(15, Short.MAX_VALUE))
-		);
-		
-		table = new JTable();
-		scrollPane.setViewportView(table);
-		getContentPane().setLayout(groupLayout);
-	}
-	
-	private JTable table;
-	
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setText("From");
+
+        tfFrom.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setText("To");
+
+        tfTo.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        
+        lblError = new JLabel("");
+        lblError.setForeground(new Color(255, 0, 128));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        layout.setHorizontalGroup(
+        	layout.createParallelGroup(Alignment.TRAILING)
+        		.addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+        		.addGroup(layout.createSequentialGroup()
+        			.addComponent(refreshBtn)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.LEADING)
+        				.addGroup(layout.createSequentialGroup()
+        					.addComponent(paymentStBtn, GroupLayout.PREFERRED_SIZE, 119, Short.MAX_VALUE)
+        					.addGap(18)
+        					.addComponent(serviceStBtn, GroupLayout.PREFERRED_SIZE, 118, Short.MAX_VALUE)
+        					.addGap(18)
+        					.addComponent(roomStBtn, GroupLayout.PREFERRED_SIZE, 118, Short.MAX_VALUE))
+        				.addComponent(exitBtn, GroupLayout.DEFAULT_SIZE, 391, Short.MAX_VALUE))
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(exportBtn))
+        		.addGroup(layout.createSequentialGroup()
+        			.addComponent(lblContent, GroupLayout.DEFAULT_SIZE, 519, Short.MAX_VALUE)
+        			.addContainerGap())
+        		.addGroup(Alignment.LEADING, layout.createSequentialGroup()
+        			.addGap(116)
+        			.addComponent(jLabel1)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(tfFrom, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(jLabel2)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addComponent(tfTo, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
+        			.addGap(18)
+        			.addComponent(lblError, GroupLayout.PREFERRED_SIZE, 299, GroupLayout.PREFERRED_SIZE)
+        			.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        layout.setVerticalGroup(
+        	layout.createParallelGroup(Alignment.LEADING)
+        		.addGroup(layout.createSequentialGroup()
+        			.addComponent(lblContent, GroupLayout.PREFERRED_SIZE, 50, GroupLayout.PREFERRED_SIZE)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        				.addComponent(jLabel1)
+        				.addComponent(tfFrom, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(jLabel2)
+        				.addComponent(tfTo, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+        				.addComponent(lblError))
+        			.addGap(8)
+        			.addComponent(jScrollPane1, GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+        			.addPreferredGap(ComponentPlacement.RELATED)
+        			.addGroup(layout.createParallelGroup(Alignment.LEADING, false)
+        				.addGroup(layout.createSequentialGroup()
+        					.addGroup(layout.createParallelGroup(Alignment.BASELINE)
+        						.addComponent(paymentStBtn)
+        						.addComponent(serviceStBtn)
+        						.addComponent(roomStBtn))
+        					.addPreferredGap(ComponentPlacement.RELATED, 18, Short.MAX_VALUE)
+        					.addComponent(exitBtn, GroupLayout.PREFERRED_SIZE, 36, GroupLayout.PREFERRED_SIZE))
+        				.addComponent(exportBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        				.addComponent(refreshBtn, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+        );
+        getContentPane().setLayout(layout);
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(StatisticGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(StatisticGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(StatisticGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(StatisticGUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new StatisticGUI().setVisible(true);
+            }
+        });
+    }
+
     public void openFile(String file){
         try{
             File path = new File(file);
@@ -208,7 +368,7 @@ public class StatisticGUI extends JFrame{
         }
     }
     
-    private void loadPaymentStatistic() {
+    private void loadPaymentStatistic(String from, String to) {
 		DefaultTableModel dtm = new DefaultTableModel();
 		dtm.addColumn("paymentId");
 		dtm.addColumn("cutomerId");
@@ -220,7 +380,7 @@ public class StatisticGUI extends JFrame{
 		table.setModel(dtm);
 		
 		ArrayList<PaymentDTO> arr = new ArrayList<PaymentDTO>();
-		arr = paymentBUS.mostPayment("1", "1", "2000");
+		arr = paymentBUS.mostPayment(from, to);
 		
 		for(int i = 0; i < arr.size(); i++){
 			PaymentDTO em = arr.get(i);
@@ -239,7 +399,7 @@ public class StatisticGUI extends JFrame{
 		}
     }
     
-    private void loadRoomStatistic() {
+    private void loadRoomStatistic(String from, String to) {
      	DefaultTableModel dtm = new DefaultTableModel();
 		dtm.addColumn("roomId");
 		dtm.addColumn("size");
@@ -249,7 +409,7 @@ public class StatisticGUI extends JFrame{
 		table.setModel(dtm);
 		
 		ArrayList<RoomDTO> arr = new ArrayList<RoomDTO>();
-		arr = roomBUS.mostRoom("1", "1", "2000");
+		arr = roomBUS.mostRoom(from, to);
 		
 		for(int i = 0; i < arr.size(); i++){
 			RoomDTO em = arr.get(i);
@@ -266,7 +426,7 @@ public class StatisticGUI extends JFrame{
 		
     }
     
-    private void loadServiceStatistic() {
+    private void loadServiceStatistic(String from, String to) {
     	DefaultTableModel dtm = new DefaultTableModel();
 		dtm.addColumn("serviceId");
 		dtm.addColumn("name");
@@ -275,7 +435,7 @@ public class StatisticGUI extends JFrame{
 		table.setModel(dtm);
 		
 		ArrayList<ServiceDTO> arr = new ArrayList<ServiceDTO>();
-		arr = serviceBUS.mostOrder("1", "1", "2000");
+		arr = serviceBUS.mostOrder(from, to);
 		
 		for(int i = 0; i < arr.size(); i++){
 			ServiceDTO em = arr.get(i);
@@ -291,36 +451,9 @@ public class StatisticGUI extends JFrame{
 		
     }
 	
-	private void loadPaymentList() {
+	private void loadEmpty() {
 		DefaultTableModel dtm = new DefaultTableModel();
-		dtm.addColumn("paymentId");
-		dtm.addColumn("cutomerId");
-		dtm.addColumn("staffId");
-		dtm.addColumn("create date");
-		dtm.addColumn("payment date");
-		dtm.addColumn("total");
-		dtm.addColumn("status");
 		table.setModel(dtm);
-		
-		ArrayList<PaymentDTO> arr = new ArrayList<PaymentDTO>();
-		arr = paymentBUS.getAllPayments();
-		
-		for(int i = 0; i < arr.size(); i++){
-			PaymentDTO em = arr.get(i);
-			
-			
-			int paymentId = em.getPaymentId();
-			int customerId = em.getCustomerId();
-			int staffId = em.getStaffId();
-			String createDate = em.getCreateDate();
-			String paymentDate = em.getPaymentDate();
-			int total = em.getTotal();
-			String status = (em.getStatus() ? "paid" : "unpaid");
-			
-			Object[] row = {paymentId, customerId, staffId, createDate, paymentDate, total, status};
-			
-			dtm.addRow(row);
-		}
 	}
-
+    
 }

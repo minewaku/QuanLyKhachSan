@@ -23,7 +23,7 @@ public class StaffBUS {
 			return "Số điện thoại không hợp lệ";
 		
 		if (!staff.checkIfDateIsValid(Staff.getBirthday()))
-			return "Ngày không hợp lệ (MM/dd/yyyy)";
+			return "Ngày không hợp lệ (yyyy-MM-dd)";
 		
 		if (staff.addStaff(Staff))
 			return "Thêm thành công";
@@ -42,7 +42,7 @@ public class StaffBUS {
 			return "Số điện thoại không hợp lệ";
 		
 		if (!staff.checkIfDateIsValid(Staff.getBirthday()))
-			return "Ngày không hợp lệ (MM/dd/yyyy)";
+			return "Ngày không hợp lệ (yyyy-MM-dd)";
 		
 		if (staff.editStaff(Staff))
 			return "Chỉnh sửa thành công";

@@ -9,21 +9,7 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
-import java.awt.Desktop;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.table.DefaultTableModel;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.util.Date;
 
 import DTO.ReservationsDTO;
 import DTO.RoomDTO;
@@ -285,7 +271,7 @@ public class ReservationsDAO {
 	}
 	
 	public boolean checkIfDateIsValid(String date) {
-	        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+	        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 	        format.setLenient(false);
 	        try {
 	            format.parse(date);
@@ -294,6 +280,23 @@ public class ReservationsDAO {
 	        }
 	        return true;
 	 }
+	
+	public boolean compareCurrentDate(String date) {
+		boolean result = false;
+		try {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");  
+			Date date1 = format.parse(date);  
+			Date current = new Date();
+			
+			if (date1.compareTo(current) >= 0)
+				result = true;
+			
+		} catch (ParseException ex) {
+			System.out.println(ex);
+		}
+		
+		return result;
+	}
 	 
 	 public void updateRoomStatus(int id, int status) {
 

@@ -6,6 +6,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -70,16 +72,15 @@ public class PaymentDAO {
 		return arr;
 	}
 	
-	public ArrayList<PaymentDTO> mostPayment(String day, String month, String year){
+	public ArrayList<PaymentDTO> mostPayment(String from, String to){
 		ArrayList<PaymentDTO> arr = new ArrayList<PaymentDTO>();
 		
 		if (openConnection()) {
 			try {
-				String date = year + "-" + month + "-1" ;
-				
-				String sql = "select * from Payment as p where p.createDate >= ? and p.createDate <= GETDATE() order by p.total desc";
+				String sql = "select * from Payment as p where p.createDate >= ? and p.createDate <= ? order by p.total desc";
 				PreparedStatement stmt = con.prepareStatement(sql);
-				stmt.setString(1, date);
+				stmt.setString(1, from);
+				stmt.setString(2, to);
 				ResultSet rs = stmt.executeQuery();
 				while(rs.next()){
 					PaymentDTO em = new PaymentDTO();
@@ -218,6 +219,37 @@ public class PaymentDAO {
 		return result;
 	}
 
+	 public ArrayList<PaymentDTO> searchRange(int x, int y) {
+         ArrayList<PaymentDTO> result = new ArrayList<>();
+	
+	if (openConnection()) {
+		try {
+			String sql = "SELECT * FROM Payment WHERE total BETWEEN ? AND ?";
+                            PreparedStatement stmt = con.prepareStatement(sql);
+                            stmt.setInt(1, x);
+                            stmt.setInt(2, y);
+                            ResultSet rs = stmt.executeQuery();
+                            while (rs.next()) {
+                                PaymentDTO em = new PaymentDTO();
+                                em.setPaymentId(rs.getInt("paymentId"));
+                                em.setCustomerId(rs.getInt("customerId"));
+                                em.setStaffId(rs.getInt("staffId"));
+                                calTotal(rs.getInt("paymentId"));
+                                em.setCreateDate(rs.getString("createDate"));
+                                em.setPaymentDate(rs.getString("paymentDate")); 
+                                em.setTotal(rs.getInt("total"));
+                                em.setStatus(rs.getBoolean("status")); 
+                                result.add(em);
+                            }
+                    }
+		catch (SQLException ex) {
+			System.out.println(ex);
+		} finally { closeConnection(); } }
+	
+		return result;
+    }
+
+	
 	public boolean hasPaymentId(int id){
 		boolean result = false;
 		
@@ -232,6 +264,56 @@ public class PaymentDAO {
 			} finally { closeConnection(); } }
 		return result;
 	}
+	
+	public boolean checkPaymentStatus(int id) {
+		boolean result = false;
+		
+		if (openConnection()) {
+			try {
+				String sql = "Select * from Payment where paymentId = " + id;
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);
+				result = rs.next();
+				
+				if(rs.getInt("status") == 0)
+					return result;
+				else if(rs.getInt("status") == 1)
+					result = true;
+				
+			} catch (SQLException ex) {
+				System.out.println(ex);
+			} finally { closeConnection(); } }
+		return result;
+	}
+	
+	public boolean checkIfDateIsValid(String date) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        format.setLenient(false);
+        try {
+            format.parse(date);
+        } catch (ParseException e) {
+            return false;
+        }
+        return true;
+	}
+	
+	public boolean compareDate(String dateString1, String dateString2) {
+		boolean result = false;
+		try {
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");  
+			Date date1 = format.parse(dateString1);  
+			Date date2 = format.parse(dateString2);
+			
+			if (date2.compareTo(date1) >= 0)
+				result = true;
+			
+		} catch (ParseException ex) {
+			System.out.println(ex);
+		}
+		
+		return result;
+	}
+
 
 	public boolean pay(PaymentDTO payment) {
 		boolean result = false;
@@ -243,21 +325,15 @@ public class PaymentDAO {
 	            stmt.setDate(1, new java.sql.Date(new Date().getTime())); 
 	            stmt.setInt(2, payment.getPaymentId()); 
 	            
-				if (stmt.executeUpdate() >= 1)
+				if (stmt.execute())
 					result = true;
-				
+
 			} catch (SQLException ex) {
 				System.out.println(ex);
 			} finally { closeConnection(); } }
 		
 		return result;
 
-	}
-	
-	private boolean checkDatelarger(String date) {
-		boolean result = false;
-		
-		return result;
 	}
 
 	public boolean calTotal(int id) {

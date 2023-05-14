@@ -234,37 +234,5 @@ public class CustomerDAO {
 	        }
 	        return true;
 	 }
-	 
-	 public String getCurrentDate() {
-	        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-	        format.setLenient(false);
-	        
-	        Date now = new Date();
-	        return format.format(now);
-	 }
-	 
-	 public int compareDate(String date1, String date2) {
-		 int result = 0;
-		 
-		 try {
-	        SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-	        format.setLenient(false);
-	        
-	        Date d1 = format.parse(date1);
-	        Date d2 = format.parse(date2);
-	        
-	        if(d1.compareTo(d2) > 0) {
-	            result = 2;
-	         } else if(d1.compareTo(d2) < 0) {
-	            result = 1;
-	         } else if(d1.compareTo(d2) == 0) {
-	            result = 0;
-	         }
-		 } catch(ParseException e) {
-			 System.out.println(e);
-		 }
-		 
-		 return result;
-	 }
 
 }	

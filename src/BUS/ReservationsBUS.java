@@ -31,6 +31,9 @@ public class ReservationsBUS {
 		if (!payment.hasPaymentId((paymentId)))
 			return "Mã Hóa Đơn không tồn tại";
 		
+		if(payment.checkPaymentStatus(paymentId))
+			return "Mã hóa đơn đã thanh toán";
+		
 		if (!room.hasRoomId((roomId)))
 			return "Mã Phòng không tồn tại";
 		
@@ -38,7 +41,10 @@ public class ReservationsBUS {
 			return "Phòng không trống";
 		
 		if (!reservations.checkIfDateIsValid(Reservations.getArrivalDate()))
-			return "Ngày không hợp lệ (MM/dd/yyyy)";
+			return "Ngày không hợp lệ (yyyy-MM-dd)";
+		
+		if (!reservations.compareCurrentDate(Reservations.getArrivalDate()))
+			return  "Ngày đặt phải nhỏ hiện tại";
 		
 		if (reservations.addReservations(Reservations))
 			return "Thêm thành công";
@@ -53,6 +59,9 @@ public class ReservationsBUS {
 		if (!payment.hasPaymentId((paymentId)))
 			return "Mã Hóa Đơn không tồn tại";
 		
+		if(payment.checkPaymentStatus(paymentId))
+			return "Mã hóa đơn đã thanh toán";
+		
 		if (!room.hasRoomId((roomId)))
 			return "Mã Phòng không tồn tại";
 		
@@ -60,7 +69,10 @@ public class ReservationsBUS {
 			return "Phòng không trống";
 		
 		if (!reservations.checkIfDateIsValid(Reservations.getArrivalDate()))
-			return "Ngày không hợp lệ (MM/dd/yyyy)";
+			return "Ngày không hợp lệ (yyyy-MM-dd)";
+		
+		if (!reservations.compareCurrentDate(Reservations.getArrivalDate()))
+			return  "Ngày đặt phải nhỏ hiện tại";
 		
 		if (reservations.editReservations(Reservations))
 			return "Chỉnh sửa thành công";

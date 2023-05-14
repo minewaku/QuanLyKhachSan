@@ -29,6 +29,7 @@ public class SignupGUI extends JFrame {
 	private JTextField tfFullname;
 
     StaffBUS staffBUS = new StaffBUS();
+    LoginGUI user = new LoginGUI();
     static public StaffDTO registerUser = new StaffDTO();
 	
 	public static void main(String[] args) {
@@ -211,6 +212,7 @@ public class SignupGUI extends JFrame {
 						
 						lblError.setText(staffBUS.addStaff(em));
 						if (lblError.getText() == "Thêm thành công") {
+							user.loginUser = em;
 
 							dispose();
 							JFrame.setDefaultLookAndFeelDecorated(false);

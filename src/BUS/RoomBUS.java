@@ -13,8 +13,8 @@ public class RoomBUS {
 		return room.getAllRooms();
 	}
 	
-	public ArrayList<RoomDTO> mostRoom(String day, String month, String year) {
-		return room.mostRoom(day, month, year);
+	public ArrayList<RoomDTO> mostRoom(String from, String to) {
+		return room.mostRoom(from, to);
 	}
 	
 	public ArrayList<RoomDTO> getAllEmptyRooms(){
